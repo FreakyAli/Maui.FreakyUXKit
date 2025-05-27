@@ -1,8 +1,4 @@
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
-using System;
-
+using View = Microsoft.Maui.Controls.View;
 #if ANDROID
 using Android.Views;
 #elif IOS

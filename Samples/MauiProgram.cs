@@ -1,5 +1,4 @@
 ﻿using Maui.FreakyUXKit;
-using CommunityToolkit.Maui;
 
 namespace Samples;
 public static class MauiProgram
@@ -12,8 +11,7 @@ public static class MauiProgram
 			fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 			fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 		})
-		.UseFreakyUXKit()
-		.UseMauiCommunityToolkit();
+		.UseFreakyUXKit();
         return builder.Build();
     }
 }
