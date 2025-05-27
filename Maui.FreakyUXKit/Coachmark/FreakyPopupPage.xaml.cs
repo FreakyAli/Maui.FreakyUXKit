@@ -28,11 +28,11 @@ public partial class FreakyPopupPage : ContentPage
         await NextCoachMark().ConfigureAwait(false);
     }
 	
-	 protected override async void OnAppearing()
+	protected override async void OnAppearing()
     {
+        base.OnAppearing();
         await Task.Delay(100);
         ShowCurrentCoachMark();
-        base.OnAppearing();
     }
 
     protected override void OnDisappearing()
@@ -47,7 +47,7 @@ public partial class FreakyPopupPage : ContentPage
         _currentIndex++;
         if (_currentIndex >= _views.Count())
         {
-            await Constants.MainPage?.Navigation.PopModalAsync();
+            await Constants.MainPage?.Navigation.PopModalAsync(false);
         }
         else
         {

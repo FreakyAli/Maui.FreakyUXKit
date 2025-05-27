@@ -56,9 +56,9 @@ public static class FreakyCoachmark
             return;
 
         if (newValue is bool enabled && enabled)
-            page.Appearing += OnPageAppearing;
+            page.Loaded += OnPageAppearing;
         else
-            page.Appearing -= OnPageAppearing;
+            page.Loaded -= OnPageAppearing;
     }
 
     #endregion
@@ -132,6 +132,6 @@ public static class FreakyCoachmark
             .ToList();
 
         await CoachmarkManager.PresentCoachmarksAsync(coachMarkViews);
-        page.Appearing -= OnPageAppearing;
+        page.Loaded -= OnPageAppearing;
     }
 }

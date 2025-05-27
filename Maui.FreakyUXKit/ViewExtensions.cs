@@ -1,4 +1,3 @@
-using View = Microsoft.Maui.Controls.View;
 #if ANDROID
 using Android.Views;
 #elif IOS
