@@ -5,29 +5,36 @@ namespace Maui.FreakyUXKit;
 
 public partial class FreakyPopupPage : ContentPage
 {
-	private readonly IEnumerable<View> _views;
-	private int _currentIndex;
-	private View _currentTargetView => _views?.ElementAt(_currentIndex);
-	private HighlightShape _currentShape;
-	private SKRect _currentBounds;
-	private readonly List<View> _overlays = new();
-	private System.Timers.Timer _animationTimer;
-	private float _pulseScale = 1f;
-	private bool _pulseGrowing = true;
+    private readonly IEnumerable<View> _views;
+    private int _currentIndex;
+    private SKRect _currentBounds;
+    private readonly List<View> _overlays = new();
+    private System.Timers.Timer _animationTimer;
+    private float _pulseScale = 1f;
+    private bool _pulseGrowing = true;
 
-	public FreakyPopupPage(IEnumerable<View> coachMarkViews)
-	{
+    #region Properties
+    private View CurrentTargetView => _views?.ElementAt(_currentIndex);
+    private View OverlayView => (View)FreakyCoachmark.GetOverlayView(CurrentTargetView);
+    private HighlightAnimationStyle HighlightAnimation => FreakyCoachmark.GetHighlightAnimation(CurrentTargetView);
+    private HighlightShape CurrentShape => FreakyCoachmark.GetHighlightShape(CurrentTargetView);
+    private OverlayAnimationStyle OverlayAnimation => FreakyCoachmark.GetOverlayAnimation(CurrentTargetView);
+    private float CornerRadius => FreakyCoachmark.GetHighlightShapeCornerRadius(CurrentTargetView);
+    #endregion
+
+    public FreakyPopupPage(IEnumerable<View> coachMarkViews)
+    {
+        _currentIndex = 0;
         _views = coachMarkViews;
-		_currentIndex = 0;
-		InitializeComponent();
-	}
+        InitializeComponent();
+    }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
     {
         await NextCoachMark().ConfigureAwait(false);
     }
-	
-	protected override async void OnAppearing()
+
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         await Task.Delay(100);
@@ -56,29 +63,24 @@ public partial class FreakyPopupPage : ContentPage
     private void ShowCurrentCoachMark()
     {
         ClearOverlayViews();
-        
-        _currentShape = FreakyCoachmark.GetHighlightShape(_currentTargetView);
-        var overlayView = (View)FreakyCoachmark.GetOverlayView(_currentTargetView);
-        var highlightAnimation = FreakyCoachmark.GetHighlightAnimation(_currentTargetView);
-        var overlayAnimation = FreakyCoachmark.GetOverlayAnimation(_currentTargetView);
 
-        if (_currentTargetView.Handler == null || overlayView == null)
+        if (CurrentTargetView.Handler == null || OverlayView == null)
             return;
 
-        var bounds = _currentTargetView.GetRelativeBoundsTo(container);
+        var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
         _currentBounds = new SKRect(
             (float)bounds.X,
             (float)bounds.Y,
             (float)(bounds.X + bounds.Width),
             (float)(bounds.Y + bounds.Height)
         );
-        overlayView.Margin = new Thickness(bounds.X, bounds.Y + bounds.Height + 10, 0, 0);
-        overlayView.MaximumWidthRequest = bounds.Width;
-        container.Children.Add(overlayView);
-        _overlays.Add(overlayView);
+        OverlayView.Margin = new Thickness(bounds.X, bounds.Y + bounds.Height + 10, 0, 0);
+        OverlayView.MaximumWidthRequest = bounds.Width;
+        container.Children.Add(OverlayView);
+        _overlays.Add(OverlayView);
 
-        StartHighlightAnimation(highlightAnimation);
-        StartOverlayAnimation(overlayAnimation);
+        StartHighlightAnimation(HighlightAnimation);
+        StartOverlayAnimation(OverlayAnimation);
         canvasView.InvalidateSurface();
     }
 
@@ -87,6 +89,8 @@ public partial class FreakyPopupPage : ContentPage
         switch (animationStyle)
         {
             case OverlayAnimationStyle.Pulse:
+                break;
+            case OverlayAnimationStyle.Ripple:
                 break;
             case OverlayAnimationStyle.None:
             default:
@@ -127,13 +131,12 @@ public partial class FreakyPopupPage : ContentPage
 
     private void StopOverlayAnimation()
     {
-        
+
     }
 
     private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
-        var cornerRadius = FreakyCoachmark.GetHighlightShapeCornerRadius(_currentTargetView);
         canvas.Clear(SKColors.Transparent);
         var info = e.Info;
         var rect = info.Rect;
@@ -143,17 +146,18 @@ public partial class FreakyPopupPage : ContentPage
         float width = highlightRect.Width * _pulseScale;
         float height = highlightRect.Height * _pulseScale;
 
-        if (_currentTargetView == null)
+
+        if (CurrentTargetView == null)
             return;
 
         // Step 1: Draw translucent overlay (e.g. 70% opacity black)
         canvas.DrawBasicBackgroundOverlay(rect);
 
         // Step 2: "Cut out" the highlight area using Clear blend mode
-        canvas.DrawHighlightCutOut(_currentShape, highX, highY, width, height, cornerRadius);
+        canvas.DrawHighlightCutOut(CurrentShape, highX, highY, width, height, CornerRadius);
 
         // Step 3: Draw white stroke around the transparent hole
-        canvas.DrawHighlightStroke(_currentShape, highX, highY, width, height);
+        canvas.DrawHighlightStroke(CurrentShape, highX, highY, width, height);
     }
 
     private void StartHighlightPulse()

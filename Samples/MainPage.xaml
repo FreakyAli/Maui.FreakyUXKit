@@ -12,11 +12,12 @@
                 Aspect="AspectFit"
                 HeightRequest="185"
                 SemanticProperties.Description="dot net bot in a race car number eight"
-                fc:FreakyCoachmark.DisplayOrder="4"
+                fc:FreakyCoachmark.DisplayOrder="1"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
                 fc:FreakyCoachmark.HighlightAnimation="Pulse"
+                fc:FreakyCoachmark.OverlayAnimation="Ripple"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
                     <StackLayout>
@@ -29,7 +30,7 @@
             </Image>
 
             <Label
-                fc:FreakyCoachmark.DisplayOrder="1"
+                fc:FreakyCoachmark.DisplayOrder="2"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 SemanticProperties.HeadingLevel="Level1"
                 Style="{StaticResource Headline}"
