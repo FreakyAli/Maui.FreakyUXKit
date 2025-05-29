@@ -11,12 +11,11 @@
     <AbsoluteLayout x:Name="container">
         <AbsoluteLayout.GestureRecognizers>
             <TapGestureRecognizer
-                Tapped="OnBackgroundTapped"
-                NumberOfTapsRequired="1"/>
+                Tapped="OnBackgroundTapped"/>
         </AbsoluteLayout.GestureRecognizers>
         <skia:SKCanvasView
             InputTransparent="True"
-            x:Name="canvas"
+            x:Name="canvasView"
             IgnorePixelScaling="true"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
             AbsoluteLayout.LayoutFlags="All"

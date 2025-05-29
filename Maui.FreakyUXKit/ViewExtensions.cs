@@ -11,9 +11,9 @@ using Microsoft.UI.Xaml;
 using Windows.Foundation;
 #endif
 
-namespace Maui.FreakyUXKit.Helpers;
+namespace Maui.FreakyUXKit;
 
-public static class ViewPositionExtensions
+public static class ViewExntensions
 {
     public static Rect GetRelativeBoundsTo(this VisualElement view, VisualElement relativeTo)
     {

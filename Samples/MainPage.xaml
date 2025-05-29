@@ -7,12 +7,26 @@
     x:Name="page"
     fc:FreakyCoachmark.AreCoachmarksEnabled="True">
     <ScrollView>
-        <VerticalStackLayout Padding="30,0" Spacing="25">
+        <VerticalStackLayout VerticalOptions="Center" Padding="30,0" Spacing="25">
             <Image
                 Aspect="AspectFit"
                 HeightRequest="185"
                 SemanticProperties.Description="dot net bot in a race car number eight"
-                Source="dotnet_bot.png" />
+                fc:FreakyCoachmark.DisplayOrder="4"
+                fc:FreakyCoachmark.OwningPage="{Reference page}"
+                fc:FreakyCoachmark.HighlightShape="RoundRectangle"
+                fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
+                fc:FreakyCoachmark.HighlightAnimation="Pulse"
+                Source="dotnet_bot.png">
+                <fc:FreakyCoachmark.OverlayView>
+                    <StackLayout>
+                        <Label
+                            FontAttributes="Bold"
+                            Text="Describe your elements!"
+                            TextColor="White" />
+                    </StackLayout>
+                </fc:FreakyCoachmark.OverlayView>
+            </Image>
 
             <Label
                 fc:FreakyCoachmark.DisplayOrder="1"

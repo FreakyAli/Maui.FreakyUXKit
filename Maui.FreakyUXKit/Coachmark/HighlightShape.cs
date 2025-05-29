@@ -4,6 +4,6 @@ public enum HighlightShape
 {
     Rectangle,
     Circle,
-    RoundedRectangle,
+    RoundRectangle,
     Ellipse
 }

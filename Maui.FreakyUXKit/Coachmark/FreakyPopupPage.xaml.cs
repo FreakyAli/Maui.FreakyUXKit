@@ -1,4 +1,3 @@
-using Maui.FreakyUXKit.Helpers;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
@@ -8,7 +7,7 @@ public partial class FreakyPopupPage : ContentPage
 {
 	private readonly IEnumerable<View> _views;
 	private int _currentIndex;
-	private View _currentTargetView;
+	private View _currentTargetView => _views?.ElementAt(_currentIndex);
 	private HighlightShape _currentShape;
 	private SKRect _currentBounds;
 	private readonly List<View> _overlays = new();
@@ -18,9 +17,9 @@ public partial class FreakyPopupPage : ContentPage
 
 	public FreakyPopupPage(IEnumerable<View> coachMarkViews)
 	{
-		InitializeComponent();
-		_views = coachMarkViews;
+        _views = coachMarkViews;
 		_currentIndex = 0;
+		InitializeComponent();
 	}
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
@@ -38,7 +37,6 @@ public partial class FreakyPopupPage : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        StopPulse();
         ClearOverlayViews();
     }
 
@@ -58,10 +56,11 @@ public partial class FreakyPopupPage : ContentPage
     private void ShowCurrentCoachMark()
     {
         ClearOverlayViews();
-
-        _currentTargetView = _views.ElementAt(_currentIndex);
+        
         _currentShape = FreakyCoachmark.GetHighlightShape(_currentTargetView);
-        var overlayView = FreakyCoachmark.GetOverlayView(_currentTargetView) as View;
+        var overlayView = (View)FreakyCoachmark.GetOverlayView(_currentTargetView);
+        var highlightAnimation = FreakyCoachmark.GetHighlightAnimation(_currentTargetView);
+        var overlayAnimation = FreakyCoachmark.GetOverlayAnimation(_currentTargetView);
 
         if (_currentTargetView.Handler == null || overlayView == null)
             return;
@@ -78,8 +77,36 @@ public partial class FreakyPopupPage : ContentPage
         container.Children.Add(overlayView);
         _overlays.Add(overlayView);
 
-        StartPulse();
-        canvas.InvalidateSurface();
+        StartHighlightAnimation(highlightAnimation);
+        StartOverlayAnimation(overlayAnimation);
+        canvasView.InvalidateSurface();
+    }
+
+    private void StartOverlayAnimation(OverlayAnimationStyle animationStyle)
+    {
+        switch (animationStyle)
+        {
+            case OverlayAnimationStyle.Pulse:
+                break;
+            case OverlayAnimationStyle.None:
+            default:
+                // No animation
+                break;
+        }
+    }
+
+    private void StartHighlightAnimation(HighlightAnimationStyle animationStyle)
+    {
+        switch (animationStyle)
+        {
+            case HighlightAnimationStyle.Pulse:
+                StartHighlightPulse();
+                break;
+            case HighlightAnimationStyle.None:
+            default:
+                // No animation
+                break;
+        }
     }
 
     private void ClearOverlayViews()
@@ -89,94 +116,47 @@ public partial class FreakyPopupPage : ContentPage
             container.Children.Remove(view);
         }
         _overlays.Clear();
-        StopPulse();
+        StopOverlayAnimation();
+        StopHighlightAnimaion();
+    }
+
+    private void StopHighlightAnimaion()
+    {
+        StopHighlightPulse();
+    }
+
+    private void StopOverlayAnimation()
+    {
+        
     }
 
     private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
+        var cornerRadius = FreakyCoachmark.GetHighlightShapeCornerRadius(_currentTargetView);
         canvas.Clear(SKColors.Transparent);
+        var info = e.Info;
+        var rect = info.Rect;
+        var highlightRect = _currentBounds;
+        float highX = highlightRect.Left + highlightRect.Width / 2;
+        float highY = highlightRect.Top + highlightRect.Height / 2;
+        float width = highlightRect.Width * _pulseScale;
+        float height = highlightRect.Height * _pulseScale;
 
         if (_currentTargetView == null)
             return;
 
         // Step 1: Draw translucent overlay (e.g. 70% opacity black)
-        using (var paint = new SKPaint
-        {
-            Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 0, 0, 180),  // semi-transparent black
-            IsAntialias = true
-        })
-        {
-            canvas.DrawRect(e.Info.Rect, paint);
-        }
+        canvas.DrawBasicBackgroundOverlay(rect);
 
         // Step 2: "Cut out" the highlight area using Clear blend mode
-        using (var clearPaint = new SKPaint
-        {
-            BlendMode = SKBlendMode.Clear,
-            IsAntialias = true
-        })
-        {
-            var highlightRect = _currentBounds;
-            float cx = highlightRect.Left + highlightRect.Width / 2;
-            float cy = highlightRect.Top + highlightRect.Height / 2;
-            float w = highlightRect.Width * _pulseScale;
-            float h = highlightRect.Height * _pulseScale;
-
-            switch (_currentShape)
-            {
-                case HighlightShape.Circle:
-                    float radius = Math.Max(w, h) / 2;
-                    canvas.DrawCircle(cx, cy, radius, clearPaint);
-                    break;
-                case HighlightShape.Ellipse:
-                    canvas.DrawOval(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), clearPaint);
-                    break;
-                case HighlightShape.Rectangle:
-                    canvas.DrawRect(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), clearPaint);
-                    break;
-                default:
-                    canvas.DrawRoundRect(new SKRoundRect(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), 20), clearPaint);
-                    break;
-            }
-        }
+        canvas.DrawHighlightCutOut(_currentShape, highX, highY, width, height, cornerRadius);
 
         // Step 3: Draw white stroke around the transparent hole
-        using (var strokePaint = new SKPaint
-        {
-            IsAntialias = true,
-            Style = SKPaintStyle.Stroke,
-            StrokeWidth = 4,
-            Color = SKColors.White
-        })
-        {
-            var highlightRect = _currentBounds;
-            float cx = highlightRect.Left + highlightRect.Width / 2;
-            float cy = highlightRect.Top + highlightRect.Height / 2;
-            float w = highlightRect.Width * _pulseScale;
-            float h = highlightRect.Height * _pulseScale;
-
-            switch (_currentShape)
-            {
-                case HighlightShape.Circle:
-                    float radius = Math.Max(w, h) / 2;
-                    canvas.DrawCircle(cx, cy, radius, strokePaint);
-                    break;
-                case HighlightShape.Ellipse:
-                    canvas.DrawOval(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), strokePaint);
-                    break;
-                case HighlightShape.Rectangle:
-                    canvas.DrawRect(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), strokePaint);
-                    break;
-                default:
-                    canvas.DrawRoundRect(new SKRoundRect(new SKRect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), 20), strokePaint);
-                    break;
-            }
-        }
+        canvas.DrawHighlightStroke(_currentShape, highX, highY, width, height);
     }
 
-    private void StartPulse()
+    private void StartHighlightPulse()
     {
         _pulseScale = 1f;
         _pulseGrowing = true;
@@ -193,12 +173,12 @@ public partial class FreakyPopupPage : ContentPage
             else if (_pulseScale < 1f)
                 _pulseGrowing = true;
 
-            MainThread.BeginInvokeOnMainThread(() => canvas.InvalidateSurface());
+            MainThread.BeginInvokeOnMainThread(() => canvasView.InvalidateSurface());
         };
         _animationTimer.Start();
     }
 
-    private void StopPulse()
+    private void StopHighlightPulse()
     {
         _animationTimer?.Stop();
         _animationTimer?.Dispose();

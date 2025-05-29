@@ -4,18 +4,65 @@ public static class FreakyCoachmark
 {
     private static Dictionary<Page, List<View>> _registeredCoachmarkViews = [];
 
+    #region HighlightShapeCornerRadius
+
+    public static readonly BindableProperty HighlightShapeCornerRadiusProperty =
+        BindableProperty.CreateAttached(
+            "HighlightShapeCornerRadius",
+            typeof(float),
+            typeof(FreakyCoachmark),
+            10.0f);
+    public static float GetHighlightShapeCornerRadius(BindableObject view) =>  
+        (float)view.GetValue(HighlightShapeCornerRadiusProperty);      
+
+    public static void SetHighlightShapeCornerRadius(BindableObject view, float value) =>
+        view.SetValue(HighlightShapeCornerRadiusProperty, value);
+
+    #endregion
+
+    #region OverlayAnimation
+    public static readonly BindableProperty OverlayAnimationProperty =
+        BindableProperty.CreateAttached(
+            "OverlayAnimation",
+            typeof(OverlayAnimationStyle),
+            typeof(FreakyCoachmark),
+            OverlayAnimationStyle.None);
+    public static OverlayAnimationStyle GetOverlayAnimation(BindableObject view) =>
+        (OverlayAnimationStyle)view.GetValue(OverlayAnimationProperty);
+    public static void SetOverlayAnimation(BindableObject view, OverlayAnimationStyle value) =>
+        view.SetValue(OverlayAnimationProperty, value);
+
+    #endregion
+
+    #region HighlightAnimation
+    public static readonly BindableProperty HighlightAnimationProperty =
+    BindableProperty.CreateAttached(
+        "HighlightAnimation",
+        typeof(HighlightAnimationStyle),
+        typeof(FreakyCoachmark),
+        HighlightAnimationStyle.None);
+    public static HighlightAnimationStyle GetHighlightAnimation(BindableObject view) =>
+        (HighlightAnimationStyle)view.GetValue(HighlightAnimationProperty); 
+    public static void SetHighlightAnimation(BindableObject view, HighlightAnimationStyle value) =>
+        view.SetValue(HighlightAnimationProperty, value);
+
+    #endregion
+
+    #region HighlightShape
     public static readonly BindableProperty HighlightShapeProperty =
     BindableProperty.CreateAttached(
         "HighlightShape",
         typeof(HighlightShape),
         typeof(View),
-        HighlightShape.RoundedRectangle);
+        HighlightShape.RoundRectangle);
 
     public static HighlightShape GetHighlightShape(BindableObject view) =>
     (HighlightShape)view.GetValue(HighlightShapeProperty);
 
     public static void SetHighlightShape(BindableObject view, HighlightShape value) =>
     view.SetValue(HighlightShapeProperty, value);
+
+    #endregion
 
     #region CoachmarkOverlayView
 
@@ -56,9 +103,9 @@ public static class FreakyCoachmark
             return;
 
         if (newValue is bool enabled && enabled)
-            page.Loaded += OnPageAppearing;
+            page.Loaded += OnPageLoaded;
         else
-            page.Loaded -= OnPageAppearing;
+            page.Loaded -= OnPageLoaded;
     }
 
     #endregion
@@ -119,7 +166,7 @@ public static class FreakyCoachmark
     internal static List<View> GetRegisteredCoachmarksForPage(Page page) =>
         _registeredCoachmarkViews.TryGetValue(page, out var list) ? list : [];
 
-    private static async void OnPageAppearing(object? sender, EventArgs e)
+    private static async void OnPageLoaded(object? sender, EventArgs e)
     {
         if (sender is not Page page)
             return;
@@ -132,6 +179,6 @@ public static class FreakyCoachmark
             .ToList();
 
         await CoachmarkManager.PresentCoachmarksAsync(coachMarkViews);
-        page.Loaded -= OnPageAppearing;
+        page.Loaded -= OnPageLoaded;
     }
 }
