@@ -20,32 +20,17 @@ public static class FreakyCoachmark
 
     #endregion
 
-    #region OverlayAnimation
-    public static readonly BindableProperty OverlayAnimationProperty =
+    #region CoachmarkAnimation
+    public static readonly BindableProperty CoachmarkAnimationProperty =
         BindableProperty.CreateAttached(
-            "OverlayAnimation",
-            typeof(OverlayAnimationStyle),
+            "CoachmarkAnimation",
+            typeof(CoachmarkAnimationStyle),
             typeof(FreakyCoachmark),
-            OverlayAnimationStyle.None);
-    public static OverlayAnimationStyle GetOverlayAnimation(BindableObject view) =>
-        (OverlayAnimationStyle)view.GetValue(OverlayAnimationProperty);
-    public static void SetOverlayAnimation(BindableObject view, OverlayAnimationStyle value) =>
-        view.SetValue(OverlayAnimationProperty, value);
-
-    #endregion
-
-    #region HighlightAnimation
-    public static readonly BindableProperty HighlightAnimationProperty =
-    BindableProperty.CreateAttached(
-        "HighlightAnimation",
-        typeof(HighlightAnimationStyle),
-        typeof(FreakyCoachmark),
-        HighlightAnimationStyle.None);
-    public static HighlightAnimationStyle GetHighlightAnimation(BindableObject view) =>
-        (HighlightAnimationStyle)view.GetValue(HighlightAnimationProperty); 
-    public static void SetHighlightAnimation(BindableObject view, HighlightAnimationStyle value) =>
-        view.SetValue(HighlightAnimationProperty, value);
-
+            CoachmarkAnimationStyle.None);
+    public static CoachmarkAnimationStyle GetCoachmarkAnimation(BindableObject view) =>
+        (CoachmarkAnimationStyle)view.GetValue(CoachmarkAnimationProperty);
+    public static void SetCoachmarkAnimation(BindableObject view, CoachmarkAnimationStyle value) =>
+        view.SetValue(CoachmarkAnimationProperty, value);
     #endregion
 
     #region HighlightShape
