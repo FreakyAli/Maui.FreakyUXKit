@@ -16,7 +16,7 @@
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Wave"
+                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
                     <StackLayout>

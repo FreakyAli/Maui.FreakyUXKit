@@ -65,12 +65,15 @@ internal static class SkiaSharpExtensions
         }
     }
 
-    internal static void DrawReverseRippleToHighlight(this SKCanvas canvas, SKRect canvasRect, HighlightShape shape, 
+    /// <summary>
+    /// Draws the Focus animation effect with ripple convergence and pulsing highlight
+    /// </summary>
+    internal static void DrawFocusRippleEffect(this SKCanvas canvas, SKRect canvasRect, HighlightShape shape, 
         float centerX, float centerY, float targetWidth, float targetHeight, float cornerRadius, float progress)
     {
         // Define colors - keep original dark overlay and distinct ripple color
         var originalColor = new SKColor(0, 0, 0, 180); // Original dark overlay
-        var rippleColor = new SKColor(255, 0, 0);   // Red color for ripple effect
+        var focusColor = new SKColor(255, 0, 0);   // Red color for focus effect
         
         // Calculate the maximum distance from center to any corner of the screen
         float maxDistance = Math.Max(
@@ -85,7 +88,7 @@ internal static class SkiaSharpExtensions
         );
         
         // Phase 1: Convergence phase (0.0 to 0.5) - ripple converges to highlight (happens only once)
-        // Phase 2: Static red background with subtle bounce on highlight (0.5 to 1.0 and beyond)
+        // Phase 2: Static focus background with subtle bounce on highlight (0.5 to 1.0 and beyond)
         const float convergencePhaseEnd = 0.5f;
         
         // Check if we've completed the first ripple cycle
@@ -107,18 +110,18 @@ internal static class SkiaSharpExtensions
             };
             canvas.DrawRect(canvasRect, originalPaint);
             
-            // Step 2: Draw the ripple area ONLY in the ripple zone (outside the current radius)
+            // Step 2: Draw the focus area ONLY in the ripple zone (outside the current radius)
             canvas.Save();
             
             // Create inverse clipping path - everything OUTSIDE the current ripple boundary
-            var rippleClipPath = CreateClipPath(shape, centerX, centerY, currentRadius, targetWidth, targetHeight, cornerRadius, convergenceProgress, true);
+            var focusClipPath = CreateFocusClipPath(shape, centerX, centerY, currentRadius, targetWidth, targetHeight, cornerRadius, convergenceProgress, true);
             
-            // Invert the clipping - we want to draw ripple color OUTSIDE the convergence area
+            // Invert the clipping - we want to draw focus color OUTSIDE the convergence area
             var fullScreenPath = new SKPath();
             fullScreenPath.AddRect(canvasRect);
             
             // Use instance Op method to create the difference path
-            var inversePath = fullScreenPath.Op(rippleClipPath, SKPathOp.Difference);
+            var inversePath = fullScreenPath.Op(focusClipPath, SKPathOp.Difference);
             
             if (inversePath != null)
             {
@@ -130,14 +133,14 @@ internal static class SkiaSharpExtensions
                 canvas.ClipRect(canvasRect);
             }
             
-            // Draw ripple color only in the clipped area (outside convergence boundary)
-            using var ripplePaint = new SKPaint
+            // Draw focus color only in the clipped area (outside convergence boundary)
+            using var focusPaint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
-                Color = rippleColor,
+                Color = focusColor,
                 IsAntialias = true
             };
-            canvas.DrawRect(canvasRect, ripplePaint);
+            canvas.DrawRect(canvasRect, focusPaint);
             
             canvas.Restore();
             
@@ -145,24 +148,24 @@ internal static class SkiaSharpExtensions
             fullScreenPath.Dispose();
             inversePath?.Dispose();
             
-            // Step 3: Draw ripple ring at the boundary
-            DrawRippleRing(canvas, shape, centerX, centerY, currentRadius, cornerRadius, targetWidth, targetHeight, convergenceProgress, true);
+            // Step 3: Draw focus ring at the boundary
+            DrawFocusRing(canvas, shape, centerX, centerY, currentRadius, cornerRadius, targetWidth, targetHeight, convergenceProgress, true);
         }
         else
         {
-            // After ripple completion OR during bounce phase - use ripple color as the new background
+            // After ripple completion OR during bounce phase - use focus color as the new background
             // This ensures the background stays red after the ripple completes
             using var backgroundPaint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
-                Color = rippleColor, // Use ripple color as the permanent background now
+                Color = focusColor, // Use focus color as the permanent background now
                 IsAntialias = true
             };
             canvas.DrawRect(canvasRect, backgroundPaint);
         }
     }
 
-    private static SKPath CreateClipPath(HighlightShape shape, float centerX, float centerY, float radius,
+    private static SKPath CreateFocusClipPath(HighlightShape shape, float centerX, float centerY, float radius,
         float targetWidth, float targetHeight, float cornerRadius, float convergenceProgress, bool isConverging)
     {
         var clipPath = new SKPath();
@@ -228,7 +231,7 @@ internal static class SkiaSharpExtensions
         return clipPath;
     }
 
-    private static void DrawRippleRing(SKCanvas canvas, HighlightShape shape, float centerX, float centerY,
+    private static void DrawFocusRing(SKCanvas canvas, HighlightShape shape, float centerX, float centerY,
         float radius, float cornerRadius, float targetWidth, float targetHeight, float convergenceProgress, bool isConverging)
     {
         using var ringPaint = new SKPaint
