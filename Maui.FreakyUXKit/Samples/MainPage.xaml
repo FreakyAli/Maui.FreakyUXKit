@@ -17,6 +17,7 @@
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
                 fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                fc:FreakyCoachmark.PreferredPosition="Auto"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
                     <StackLayout>
