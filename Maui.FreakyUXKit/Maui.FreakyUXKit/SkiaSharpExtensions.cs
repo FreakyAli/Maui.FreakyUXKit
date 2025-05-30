@@ -4,6 +4,107 @@ namespace Maui.FreakyUXKit;
 
 internal static class SkiaSharpExtensions
 {
+    /// <summary>
+    /// Calculates the best position for overlay view based on available space
+    /// </summary>
+    internal static CoachmarkPosition CalculateOptimalPosition(this SKRect targetBounds, SKRect containerBounds, 
+        Size overlaySize, float margin = 20f)
+    {
+        var positions = new Dictionary<CoachmarkPosition, float>();
+        
+        // Calculate available space in each direction
+        float topSpace = targetBounds.Top - margin;
+        float bottomSpace = containerBounds.Height - targetBounds.Bottom - margin;
+        float leftSpace = targetBounds.Left - margin;
+        float rightSpace = containerBounds.Width - targetBounds.Right - margin;
+        
+        // Check if overlay fits in each position
+        if (topSpace >= overlaySize.Height)
+            positions[CoachmarkPosition.Top] = topSpace;
+            
+        if (bottomSpace >= overlaySize.Height)
+            positions[CoachmarkPosition.Bottom] = bottomSpace;
+            
+        if (leftSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.Left] = leftSpace;
+            
+        if (rightSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.Right] = rightSpace;
+        
+        // Check diagonal positions
+        if (topSpace >= overlaySize.Height && leftSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.TopLeft] = Math.Min(topSpace, leftSpace);
+            
+        if (topSpace >= overlaySize.Height && rightSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.TopRight] = Math.Min(topSpace, rightSpace);
+            
+        if (bottomSpace >= overlaySize.Height && leftSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.BottomLeft] = Math.Min(bottomSpace, leftSpace);
+            
+        if (bottomSpace >= overlaySize.Height && rightSpace >= overlaySize.Width)
+            positions[CoachmarkPosition.BottomRight] = Math.Min(bottomSpace, rightSpace);
+        
+        // Return position with most space, prefer bottom first, then top
+        if (positions.ContainsKey(CoachmarkPosition.Bottom))
+            return CoachmarkPosition.Bottom;
+        if (positions.ContainsKey(CoachmarkPosition.Top))
+            return CoachmarkPosition.Top;
+            
+        return positions.Any() ? positions.OrderByDescending(p => p.Value).First().Key : CoachmarkPosition.Bottom;
+    }
+    
+    /// <summary>
+    /// Calculates the margin/positioning for overlay view based on position
+    /// </summary>
+    internal static Thickness CalculateOverlayMargin(this CoachmarkPosition position, SKRect targetBounds, 
+        Size overlaySize, SKRect containerBounds, float margin = 10f)
+    {
+        return position switch
+        {
+            CoachmarkPosition.Top => new Thickness(
+                Math.Max(0, targetBounds.Left), 
+                Math.Max(0, targetBounds.Top - overlaySize.Height - margin), 
+                0, 0),
+                
+            CoachmarkPosition.Bottom => new Thickness(
+                Math.Max(0, targetBounds.Left), 
+                targetBounds.Bottom + margin, 
+                0, 0),
+                
+            CoachmarkPosition.Left => new Thickness(
+                Math.Max(0, targetBounds.Left - overlaySize.Width - margin), 
+                Math.Max(0, targetBounds.Top), 
+                0, 0),
+                
+            CoachmarkPosition.Right => new Thickness(
+                targetBounds.Right + margin, 
+                Math.Max(0, targetBounds.Top), 
+                0, 0),
+                
+            CoachmarkPosition.TopLeft => new Thickness(
+                Math.Max(0, targetBounds.Left - overlaySize.Width - margin), 
+                Math.Max(0, targetBounds.Top - overlaySize.Height - margin), 
+                0, 0),
+                
+            CoachmarkPosition.TopRight => new Thickness(
+                targetBounds.Right + margin, 
+                Math.Max(0, targetBounds.Top - overlaySize.Height - margin), 
+                0, 0),
+                
+            CoachmarkPosition.BottomLeft => new Thickness(
+                Math.Max(0, targetBounds.Left - overlaySize.Width - margin), 
+                targetBounds.Bottom + margin, 
+                0, 0),
+                
+            CoachmarkPosition.BottomRight => new Thickness(
+                targetBounds.Right + margin, 
+                targetBounds.Bottom + margin, 
+                0, 0),
+                
+            _ => new Thickness(Math.Max(0, targetBounds.Left), targetBounds.Bottom + margin, 0, 0)
+        };
+    }
+    
     internal static void DrawBasicBackgroundOverlay(this SKCanvas canvas, SKRect rect)
     {
         using var paint = new SKPaint

@@ -4,6 +4,51 @@ public static class FreakyCoachmark
 {
     private static Dictionary<Page, List<View>> _registeredCoachmarkViews = [];
 
+    #region HighlightPadding
+    public static readonly BindableProperty HighlightPaddingProperty =
+        BindableProperty.CreateAttached(
+            "HighlightPadding",
+            typeof(float),
+            typeof(FreakyCoachmark),
+            0.0f);
+            
+    public static float GetHighlightPadding(BindableObject view) =>
+        (float)view.GetValue(HighlightPaddingProperty);
+        
+    public static void SetHighlightPadding(BindableObject view, float value) =>
+        view.SetValue(HighlightPaddingProperty, value);
+    #endregion
+
+    #region PreferredPosition
+    public static readonly BindableProperty PreferredPositionProperty =
+        BindableProperty.CreateAttached(
+            "PreferredPosition",
+            typeof(CoachmarkPosition),
+            typeof(FreakyCoachmark),
+            CoachmarkPosition.Auto);
+            
+    public static CoachmarkPosition GetPreferredPosition(BindableObject view) =>
+        (CoachmarkPosition)view.GetValue(PreferredPositionProperty);
+        
+    public static void SetPreferredPosition(BindableObject view, CoachmarkPosition value) =>
+        view.SetValue(PreferredPositionProperty, value);
+    #endregion
+
+    #region OverlayMargin
+    public static readonly BindableProperty OverlayMarginProperty =
+        BindableProperty.CreateAttached(
+            "OverlayMargin",
+            typeof(float),
+            typeof(FreakyCoachmark),
+            10.0f);
+            
+    public static float GetOverlayMargin(BindableObject view) =>
+        (float)view.GetValue(OverlayMarginProperty);
+        
+    public static void SetOverlayMargin(BindableObject view, float value) =>
+        view.SetValue(OverlayMarginProperty, value);
+    #endregion
+
     #region HighlightShapeCornerRadius
 
     public static readonly BindableProperty HighlightShapeCornerRadiusProperty =
