@@ -31,6 +31,7 @@ public partial class FreakyPopupPage : ContentPage
     private CoachmarkAnimationStyle CoachmarkAnimation => FreakyCoachmark.GetCoachmarkAnimation(CurrentTargetView);
     private HighlightShape CurrentShape => FreakyCoachmark.GetHighlightShape(CurrentTargetView);
     private float CornerRadius => FreakyCoachmark.GetHighlightShapeCornerRadius(CurrentTargetView);
+    private Color focusAnimationColor => FreakyCoachmark.GetFocusAnimationColor(CurrentTargetView);
     #endregion
 
     public FreakyPopupPage(IEnumerable<View> coachMarkViews)
@@ -169,8 +170,8 @@ public partial class FreakyPopupPage : ContentPage
         
         var size = OverlayView.Measure(widthConstraint, heightConstraint);
         return new Size(
-            Math.Min(size.Width, widthConstraint),
-            Math.Min(size.Height, heightConstraint)
+            Math.Min(size.Request.Width, widthConstraint),
+            Math.Min(size.Request.Height, heightConstraint)
         );
     }
 
@@ -281,7 +282,7 @@ public partial class FreakyPopupPage : ContentPage
         if (_animationProgress <= FocusRipplePhaseEnd)
         {
             // Phase 1: Focus ripple convergence
-            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress);
+            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, focusAnimationColor);
         }
         else if (_animationProgress <= FocusTransitionPhaseEnd)
         {
@@ -300,7 +301,7 @@ public partial class FreakyPopupPage : ContentPage
         using var backgroundPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 0, 0), // Focus color background
+            Color = focusAnimationColor.ToSKColor(), // Focus color background
             IsAntialias = true
         };
         canvas.DrawRect(rect, backgroundPaint);
@@ -318,7 +319,7 @@ public partial class FreakyPopupPage : ContentPage
         using var backgroundPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(255, 0, 0),
+            Color = focusAnimationColor.ToSKColor(),
             IsAntialias = true
         };
         canvas.DrawRect(rect, backgroundPaint);

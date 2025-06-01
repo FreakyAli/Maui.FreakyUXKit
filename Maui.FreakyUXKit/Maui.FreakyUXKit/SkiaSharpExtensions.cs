@@ -1,4 +1,5 @@
 using SkiaSharp;
+using SkiaSharp.Views.Maui;
 
 namespace Maui.FreakyUXKit;
 
@@ -110,7 +111,7 @@ internal static class SkiaSharpExtensions
         using var paint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = new SKColor(0, 0, 0, 180),
+            Color = Constants.backgroundSKColor,
             IsAntialias = true
         };
         canvas.DrawRect(rect, paint);
@@ -170,11 +171,9 @@ internal static class SkiaSharpExtensions
     /// Draws the Focus animation effect with ripple convergence and pulsing highlight
     /// </summary>
     internal static void DrawFocusRippleEffect(this SKCanvas canvas, SKRect canvasRect, HighlightShape shape, 
-        float centerX, float centerY, float targetWidth, float targetHeight, float cornerRadius, float progress)
+        float centerX, float centerY, float targetWidth, float targetHeight, float cornerRadius, float progress, Color focusMauiColor)
     {
-        // Define colors - keep original dark overlay and distinct ripple color
-        var originalColor = new SKColor(0, 0, 0, 180); // Original dark overlay
-        var focusColor = new SKColor(255, 0, 0);   // Red color for focus effect
+        var focusColor = focusMauiColor.ToSKColor();   // Red color for focus effect
         
         // Calculate the maximum distance from center to any corner of the screen
         float maxDistance = Math.Max(
@@ -206,7 +205,7 @@ internal static class SkiaSharpExtensions
             using var originalPaint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
-                Color = originalColor,
+                Color = Constants.backgroundSKColor,
                 IsAntialias = true
             };
             canvas.DrawRect(canvasRect, originalPaint);

@@ -18,6 +18,7 @@
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
                 fc:FreakyCoachmark.CoachmarkAnimation="Focus"
                 fc:FreakyCoachmark.PreferredPosition="Auto"
+                fc:FreakyCoachmark.FocusAnimationColor="Blue"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
                     <StackLayout>
@@ -32,6 +33,7 @@
             <Label
                 fc:FreakyCoachmark.DisplayOrder="2"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
+                fc:FreakyCoachmark.CoachmarkAnimation="HighlightPulse"
                 SemanticProperties.HeadingLevel="Level1"
                 Style="{StaticResource Headline}"
                 Text="Hello, World!">

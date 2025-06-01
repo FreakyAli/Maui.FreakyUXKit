@@ -1,8 +1,23 @@
+using SkiaSharp;
+
 namespace Maui.FreakyUXKit;
 
 public static class FreakyCoachmark
 {
     private static Dictionary<Page, List<View>> _registeredCoachmarkViews = [];
+
+    #region FocusAnimationColor
+    public static readonly BindableProperty FocusAnimationColorProperty =
+        BindableProperty.CreateAttached(
+            "FocusAnimationColor",
+            typeof(Color),
+            typeof(FreakyCoachmark),
+            Constants.focusAnimationColor);
+    public static Color GetFocusAnimationColor(BindableObject view) =>
+        (Color)view.GetValue(FocusAnimationColorProperty);
+    public static void SetFocusAnimationColor(BindableObject view, Color value) =>
+        view.SetValue(FocusAnimationColorProperty, value);
+    #endregion
 
     #region HighlightPadding
     public static readonly BindableProperty HighlightPaddingProperty =
