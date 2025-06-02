@@ -76,4 +76,4 @@ Sparkline:
 
 RepoBeats:
 
-[![RepoBeats](https://repobeats.axiom.co/api/embed/62b773582fc822efda7de377fb73c527444ff44d.svg "Repobeats analytics image")
+![RepoBeats](https://repobeats.axiom.co/api/embed/62b773582fc822efda7de377fb73c527444ff44d.svg "Repobeats analytics image")
