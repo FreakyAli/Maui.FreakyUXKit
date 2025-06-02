@@ -6,5 +6,6 @@ public enum ArrowStyle
     Filled,
     DoubleLine,
     Dashed,
-    HandDrawn
+    HandDrawn,
+    Sketched
 }

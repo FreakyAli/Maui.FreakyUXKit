@@ -55,10 +55,115 @@ internal static class SkiaSharpExtensions
             case ArrowStyle.HandDrawn:
                 DrawHandDrawnArrow(canvas, start, end, color, strokeWidth);
                 break;
+            case ArrowStyle.Sketched:
+                DrawSketchedArrow(canvas, start, end, color, strokeWidth);
+                break;
             case ArrowStyle.Default:
             default:
                 DrawDefaultArrow(canvas, start, end, color, strokeWidth);
                 break;
+        }
+    }
+
+    public static void DrawSketchedArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, float baseStrokeWidth)
+    {
+        var rand = new Random();
+        int strokePasses = 3;
+
+        for (int i = 0; i < strokePasses; i++)
+        {
+            float variation = (float)(rand.NextDouble() * 0.6 - 0.3); // +/-30%
+            float strokeWidth = baseStrokeWidth * (1f + variation);
+
+            // Slight positional offset for realism
+            float offsetX = (float)(rand.NextDouble() - 0.5) * 2f;
+            float offsetY = (float)(rand.NextDouble() - 0.5) * 2f;
+
+            using var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = color,
+                StrokeWidth = strokeWidth,
+                IsAntialias = true,
+                StrokeCap = SKStrokeCap.Round
+            };
+
+            DrawWobblyLine(canvas, start, end, paint, offsetX, offsetY);
+        }
+
+        // Arrowhead
+        DrawSketchedArrowHead(canvas, start, end, color, baseStrokeWidth);
+    }
+
+    private static void DrawWobblyLine(SKCanvas canvas, SKPoint start, SKPoint end, SKPaint paint, float offsetX, float offsetY)
+    {
+        var dx = end.X - start.X;
+        var dy = end.Y - start.Y;
+        var length = (float)Math.Sqrt(dx * dx + dy * dy);
+        var direction = new SKPoint(dx / length, dy / length);
+
+        int segments = 6;
+        var rand = new Random();
+        var points = new List<SKPoint> { new SKPoint(start.X + offsetX, start.Y + offsetY) };
+
+        for (int i = 1; i < segments; i++)
+        {
+            float t = i / (float)segments;
+            var baseX = start.X + dx * t + offsetX;
+            var baseY = start.Y + dy * t + offsetY;
+
+            float wave = (float)(Math.Sin(t * Math.PI * 2) * 1.5f); // subtle wave
+            float perpX = -direction.Y * wave;
+            float perpY = direction.X * wave;
+
+            points.Add(new SKPoint(baseX + perpX, baseY + perpY));
+        }
+
+        points.Add(new SKPoint(end.X + offsetX, end.Y + offsetY));
+
+        var path = new SKPath();
+        path.MoveTo(points[0]);
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            var mid = new SKPoint((points[i].X + points[i + 1].X) / 2, (points[i].Y + points[i + 1].Y) / 2);
+            path.QuadTo(points[i], mid);
+        }
+        path.LineTo(points.Last());
+
+        canvas.DrawPath(path, paint);
+    }
+
+    private static void DrawSketchedArrowHead(SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, float baseStrokeWidth)
+    {
+        var angle = Math.Atan2(end.Y - start.Y, end.X - start.X);
+        float headLength = 18f;
+        float headAngle = (float)(Math.PI / 5); // wider than usual
+
+        var rand = new Random();
+
+        for (int i = 0; i < 2; i++)
+        {
+            float lengthVariation = (float)(rand.NextDouble() * 4f - 2f);
+            float strokeWidth = baseStrokeWidth * (1f + (float)(rand.NextDouble() * 0.3 - 0.15f));
+
+            using var paint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = color,
+                StrokeWidth = strokeWidth,
+                IsAntialias = true,
+                StrokeCap = SKStrokeCap.Round
+            };
+
+            float angleOffset = i == 0 ? -headAngle : headAngle;
+            float len = headLength + lengthVariation;
+
+            var point = new SKPoint(
+                end.X - len * (float)Math.Cos(angle + angleOffset),
+                end.Y - len * (float)Math.Sin(angle + angleOffset)
+            );
+
+            canvas.DrawLine(end, point, paint);
         }
     }
 
@@ -136,7 +241,6 @@ internal static class SkiaSharpExtensions
         canvas.DrawLine(end, arrowPoint1, paint);
         canvas.DrawLine(end, arrowPoint2, paint);
     }
-
 
     public static void DrawDefaultArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, float strokeWidth = 4f)
     {
@@ -220,7 +324,7 @@ internal static class SkiaSharpExtensions
         canvas.DrawPath(path, paint);
     }
 
-    public static void DrawDoubleLineArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, float strokeWidth )
+    public static void DrawDoubleLineArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, float strokeWidth)
     {
         using var paint = new SKPaint
         {

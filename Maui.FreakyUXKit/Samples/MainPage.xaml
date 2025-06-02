@@ -18,7 +18,7 @@
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
                 fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
-                fc:FreakyCoachmark.ArrowStyle="HandDrawn"
+                fc:FreakyCoachmark.ArrowStyle="Sketched"
                 fc:FreakyCoachmark.ArrowStrokeWidth="5"
                 fc:FreakyCoachmark.PreferredPosition="Auto"
                 Source="dotnet_bot.png">
