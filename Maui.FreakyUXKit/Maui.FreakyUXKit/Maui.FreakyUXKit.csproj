@@ -16,7 +16,7 @@
 		<PackageIcon>maui_toolkit.png</PackageIcon>
 		<RepositoryUrl>https://github.com/FreakyAli/Maui.FreakyUXKit</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/FreakyAli/Maui.FreakyUXKit</PackageProjectUrl>
-		<PackageTags>CoachMarks </PackageTags>
+		<PackageTags>CoachMarks Tutorials Tooltips Walktrough MAUI</PackageTags>
 		<PackageReadmeFile>Readme.md</PackageReadmeFile>
 		<Copyright>Copyright 2025</Copyright>
 		<PackOnBuild>true</PackOnBuild>
