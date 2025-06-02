@@ -1,3 +1,5 @@
+using Rect = Microsoft.Maui.Graphics.Rect;
+using Point = Microsoft.Maui.Graphics.Point;
 #if ANDROID
 using Android.Views;
 #elif IOS
