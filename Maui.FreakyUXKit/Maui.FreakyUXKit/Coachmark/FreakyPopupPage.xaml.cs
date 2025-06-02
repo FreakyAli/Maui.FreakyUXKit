@@ -31,7 +31,10 @@ public partial class FreakyPopupPage : ContentPage
     private CoachmarkAnimationStyle CoachmarkAnimation => FreakyCoachmark.GetCoachmarkAnimation(CurrentTargetView);
     private HighlightShape CurrentShape => FreakyCoachmark.GetHighlightShape(CurrentTargetView);
     private float CornerRadius => FreakyCoachmark.GetHighlightShapeCornerRadius(CurrentTargetView);
-    private Color focusAnimationColor => FreakyCoachmark.GetFocusAnimationColor(CurrentTargetView);
+    private Color FocusAnimationColor => FreakyCoachmark.GetFocusAnimationColor(CurrentTargetView);
+    private Color ArrowColor => FreakyCoachmark.GetArrowColor(CurrentTargetView);
+    private ArrowStyle ArrowStyle => FreakyCoachmark.GetArrowStyle(CurrentTargetView);
+    private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
     #endregion
 
     public FreakyPopupPage(IEnumerable<View> coachMarkViews)
@@ -206,13 +209,25 @@ public partial class FreakyPopupPage : ContentPage
         switch (CoachmarkAnimation)
         {
             case CoachmarkAnimationStyle.Focus:
-                StartFocusAnimation();
+            case CoachmarkAnimationStyle.Ripple:
+            case CoachmarkAnimationStyle.Pulse:
+            case CoachmarkAnimationStyle.Spotlight:
+            case CoachmarkAnimationStyle.Morph:
+                StartFocusAnimation(); // reuse timer system
+                break;
+            case CoachmarkAnimationStyle.Arrow:
+                // Arrow is static, no animation timer needed
+                canvasView.InvalidateSurface();
                 break;
             case CoachmarkAnimationStyle.None:
             default:
-                // No animation
                 break;
         }
+    }
+
+    private void StopAnimation()
+    {
+        StopFocusAnimation();
     }
 
     private void ClearOverlayViews()
@@ -225,20 +240,6 @@ public partial class FreakyPopupPage : ContentPage
         StopAnimation();
     }
 
-    private void StopAnimation()
-    {
-        switch (CoachmarkAnimation)
-        {
-            case CoachmarkAnimationStyle.Focus:
-                StopFocusAnimation();
-                break;
-            case CoachmarkAnimationStyle.None:
-            default:
-                // No animation
-                break;
-        }
-    }
-
     private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
     {
         var canvas = e.Surface.Canvas;
@@ -249,7 +250,7 @@ public partial class FreakyPopupPage : ContentPage
         float highX = highlightRect.Left + highlightRect.Width / 2;
         float highY = highlightRect.Top + highlightRect.Height / 2;
 
-        if (CurrentTargetView == null)
+        if (CurrentTargetView == null || OverlayView == null)
             return;
 
         // Route to appropriate animation renderer
@@ -258,11 +259,30 @@ public partial class FreakyPopupPage : ContentPage
             case CoachmarkAnimationStyle.Focus:
                 RenderFocusAnimation(canvas, rect, highX, highY, highlightRect);
                 break;
+            case CoachmarkAnimationStyle.Ripple:
+                RenderRippleAnimation(canvas, rect, highX, highY, highlightRect);
+                break;
+            case CoachmarkAnimationStyle.Pulse:
+                RenderPulseAnimation(canvas, rect, highX, highY, highlightRect);
+                break;
+            case CoachmarkAnimationStyle.Spotlight:
+                RenderSpotlightAnimation(canvas, rect, highX, highY, highlightRect);
+                break;
+            case CoachmarkAnimationStyle.Arrow:
+                var overlayRect = OverlayView.GetRelativeBoundsTo(container);
+                var skOverlayRect = overlayRect.ToSKRect();
+                RenderStaticHighlight(canvas, rect, highX, highY, highlightRect);
+                RenderArrowPointer(canvas, highlightRect, skOverlayRect);
+                break;
+            case CoachmarkAnimationStyle.Morph:
+                RenderMorphingHighlight(canvas, rect, highX, highY, highlightRect);
+                break;
             case CoachmarkAnimationStyle.None:
             default:
                 RenderStaticHighlight(canvas, rect, highX, highY, highlightRect);
                 break;
         }
+
     }
 
     private void RenderStaticHighlight(SKCanvas canvas, SKRect rect, float highX, float highY, SKRect highlightRect)
@@ -282,7 +302,7 @@ public partial class FreakyPopupPage : ContentPage
         if (_animationProgress <= FocusRipplePhaseEnd)
         {
             // Phase 1: Focus ripple convergence
-            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, focusAnimationColor);
+            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, FocusAnimationColor);
         }
         else if (_animationProgress <= FocusTransitionPhaseEnd)
         {
@@ -295,20 +315,114 @@ public partial class FreakyPopupPage : ContentPage
             DrawFocusPulsingHighlight(canvas, rect, highX, highY, width, height);
         }
     }
+    
+    private void RenderRippleAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
+    {
+        float rippleRadius = bounds.Width * (_animationProgress * 1.5f);
+        canvas.DrawBasicBackgroundOverlay(rect);
+        canvas.DrawRipple(x, y, rippleRadius, FocusAnimationColor.ToSKColor());
+    }
+
+    private void RenderPulseAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
+    {
+        float width = bounds.Width * _pulseScale;
+        float height = bounds.Height * _pulseScale;
+        canvas.DrawBasicBackgroundOverlay(rect);
+        canvas.DrawHighlightCutOut(CurrentShape, x, y, width, height, CornerRadius);
+        canvas.DrawHighlightStroke(CurrentShape, x, y, width, height);
+    }
+
+    private void RenderSpotlightAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
+    {
+        canvas.DrawDarkOverlayWithSpotlight(x, y, bounds.Width, bounds.Height);
+    }
+    
+    private SKPoint GetClosestPointOnRect(SKRect rect, SKPoint point)
+    {
+        // Clamp the point coordinates inside the rect
+        float x = MathF.Max(rect.Left, MathF.Min(point.X, rect.Right));
+        float y = MathF.Max(rect.Top, MathF.Min(point.Y, rect.Bottom));
+
+        // If point is inside rect, find closest edge instead
+        if (rect.Contains(point))
+        {
+            // Distances to each edge
+            float distLeft = MathF.Abs(point.X - rect.Left);
+            float distRight = MathF.Abs(rect.Right - point.X);
+            float distTop = MathF.Abs(point.Y - rect.Top);
+            float distBottom = MathF.Abs(rect.Bottom - point.Y);
+
+            float minDist = MathF.Min(MathF.Min(distLeft, distRight), MathF.Min(distTop, distBottom));
+
+            if (minDist == distLeft) return new SKPoint(rect.Left, point.Y);
+            if (minDist == distRight) return new SKPoint(rect.Right, point.Y);
+            if (minDist == distTop) return new SKPoint(point.X, rect.Top);
+            return new SKPoint(point.X, rect.Bottom);
+        }
+
+        // If outside rect, clamping suffices (point on edge or corner)
+        return new SKPoint(x, y);
+    }
+
+
+    private void RenderArrowPointer(SKCanvas canvas, SKRect highlightRect, SKRect overlayRect, float paddingPercent = 0.2f)
+    {
+        // Centers
+        var overlayCenter = new SKPoint(overlayRect.MidX, overlayRect.MidY);
+        var highlightCenter = new SKPoint(highlightRect.MidX, highlightRect.MidY);
+
+        // Direction vector and distance from overlay center to highlight center
+        var dx = highlightCenter.X - overlayCenter.X;
+        var dy = highlightCenter.Y - overlayCenter.Y;
+        var totalDistance = MathF.Sqrt(dx * dx + dy * dy);
+        if (totalDistance == 0)
+            return;
+
+        var direction = new SKPoint(dx / totalDistance, dy / totalDistance);
+
+        // Find intersection point of the line from overlayCenter toward highlightCenter with highlightRect edge
+        var edgePoint = GetClosestPointOnRect(highlightRect, overlayCenter);
+
+        // Distance from overlayCenter to edgePoint
+        var distToEdge = MathF.Sqrt((edgePoint.X - overlayCenter.X) * (edgePoint.X - overlayCenter.X) +
+                                (edgePoint.Y - overlayCenter.Y) * (edgePoint.Y - overlayCenter.Y));
+
+        // Calculate start point - padded 20% away from overlayCenter along direction
+        var start = new SKPoint(
+            overlayCenter.X + direction.X * (totalDistance * paddingPercent),
+            overlayCenter.Y + direction.Y * (totalDistance * paddingPercent));
+
+        // Calculate end point - 20% *before* edgePoint along the direction vector
+        var end = new SKPoint(
+            overlayCenter.X + direction.X * (distToEdge * (1 - paddingPercent)),
+            overlayCenter.Y + direction.Y * (distToEdge * (1 - paddingPercent)));
+
+        canvas.DrawArrow(start, end, ArrowColor.ToSKColor(), ArrowStyle, ArrowStrokeWidth);
+    }
+
+    private void RenderMorphingHighlight(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
+    {
+        float morphProgress = (float)Math.Sin(_animationProgress * Math.PI * 2) * 0.1f;
+        float width = bounds.Width * (1 + morphProgress);
+        float height = bounds.Height * (1 - morphProgress);
+        canvas.DrawBasicBackgroundOverlay(rect);
+        canvas.DrawHighlightCutOut(CurrentShape, x, y, width, height, CornerRadius);
+        canvas.DrawHighlightStroke(CurrentShape, x, y, width, height);
+    }
 
     private void DrawFocusTransition(SKCanvas canvas, SKRect rect, float highX, float highY, float width, float height)
     {
         using var backgroundPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = focusAnimationColor.ToSKColor(), // Focus color background
+            Color = FocusAnimationColor.ToSKColor(), // Focus color background
             IsAntialias = true
         };
         canvas.DrawRect(rect, backgroundPaint);
-        
+
         // Cut out highlight area
         canvas.DrawHighlightCutOut(CurrentShape, highX, highY, width, height, CornerRadius);
-        
+
         // Draw stroke
         canvas.DrawHighlightStroke(CurrentShape, highX, highY, width, height);
     }
@@ -319,7 +433,7 @@ public partial class FreakyPopupPage : ContentPage
         using var backgroundPaint = new SKPaint
         {
             Style = SKPaintStyle.Fill,
-            Color = focusAnimationColor.ToSKColor(),
+            Color = FocusAnimationColor.ToSKColor(),
             IsAntialias = true
         };
         canvas.DrawRect(rect, backgroundPaint);

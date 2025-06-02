@@ -13,27 +13,34 @@
                 HeightRequest="185"
                 SemanticProperties.Description="dot net bot in a race car number eight"
                 fc:FreakyCoachmark.DisplayOrder="1"
+                fc:FreakyCoachmark.OverlayMargin="100"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
+                fc:FreakyCoachmark.ArrowStyle="HandDrawn"
+                fc:FreakyCoachmark.ArrowStrokeWidth="5"
                 fc:FreakyCoachmark.PreferredPosition="Auto"
-                fc:FreakyCoachmark.FocusAnimationColor="Blue"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
-                    <StackLayout>
-                        <Label
-                            FontAttributes="Bold"
-                            Text="Describe your elements!"
-                            TextColor="White" />
-                    </StackLayout>
+                    <Border Padding="20" Stroke="Pink" BackgroundColor="White">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <StackLayout>
+                            <Label
+                                FontAttributes="Bold"
+                                Text="Describe your elements!"
+                                TextColor="Black" />
+                        </StackLayout>
+                    </Border>
                 </fc:FreakyCoachmark.OverlayView>
             </Image>
 
             <Label
                 fc:FreakyCoachmark.DisplayOrder="2"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.CoachmarkAnimation="HighlightPulse"
+                fc:FreakyCoachmark.CoachmarkAnimation="Pulse"
                 SemanticProperties.HeadingLevel="Level1"
                 Style="{StaticResource Headline}"
                 Text="Hello, World!">
@@ -74,6 +81,7 @@
                 x:Name="CounterBtn"
                 fc:FreakyCoachmark.DisplayOrder="2"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
+                fc:FreakyCoachmark.HighlightPadding="10"
                 HorizontalOptions="Fill"
                 SemanticProperties.Hint="Counts the number of times you click"
                 Text="Click me">

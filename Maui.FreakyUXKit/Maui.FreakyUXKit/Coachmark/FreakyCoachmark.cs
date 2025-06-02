@@ -6,6 +6,45 @@ public static class FreakyCoachmark
 {
     private static Dictionary<Page, List<View>> _registeredCoachmarkViews = [];
 
+    #region ArrowStrokeWidth
+    public static readonly BindableProperty ArrowStrokeWidthProperty =
+        BindableProperty.CreateAttached(
+            "ArrowStrokeWidth",
+            typeof(float),
+            typeof(FreakyCoachmark),
+            2.0f);
+    public static float GetArrowStrokeWidth(BindableObject view) =>
+        (float)view.GetValue(ArrowStrokeWidthProperty);
+    public static void SetArrowStrokeWidth(BindableObject view, float value) =>
+        view.SetValue(ArrowStrokeWidthProperty, value);
+    #endregion
+
+    #region ArrowStyle
+    public static readonly BindableProperty ArrowStyleProperty =
+        BindableProperty.CreateAttached(
+            "ArrowStyle",
+            typeof(ArrowStyle),
+            typeof(FreakyCoachmark),
+            ArrowStyle.Default);
+    public static ArrowStyle GetArrowStyle(BindableObject view) =>
+        (ArrowStyle)view.GetValue(ArrowStyleProperty);
+    public static void SetArrowStyle(BindableObject view, ArrowStyle value) =>
+        view.SetValue(ArrowStyleProperty, value);
+    #endregion
+
+    #region ArrowColor
+    public static readonly BindableProperty ArrowColorProperty =
+        BindableProperty.CreateAttached(
+            "ArrowColor",
+            typeof(Color),
+            typeof(FreakyCoachmark),
+            Colors.Red);
+    public static Color GetArrowColor(BindableObject view) =>
+        (Color)view.GetValue(ArrowColorProperty);
+    public static void SetArrowColor(BindableObject view, Color value) =>
+        view.SetValue(ArrowColorProperty, value);
+    #endregion
+
     #region FocusAnimationColor
     public static readonly BindableProperty FocusAnimationColorProperty =
         BindableProperty.CreateAttached(

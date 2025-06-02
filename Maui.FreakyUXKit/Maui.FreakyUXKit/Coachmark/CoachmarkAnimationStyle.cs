@@ -4,5 +4,9 @@ public enum CoachmarkAnimationStyle
 {
     None,
     Focus,
-    HighlightPulse,
-}
+    Ripple,
+    Pulse,
+    Spotlight,
+    Arrow,
+    Morph
+}   
