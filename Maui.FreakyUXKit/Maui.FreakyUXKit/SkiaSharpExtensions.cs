@@ -13,32 +13,7 @@ internal static class SkiaSharpExtensions
             (float)rect.Right,
             (float)rect.Bottom);
     }
-
-    public static void DrawRipple(this SKCanvas canvas, float cx, float cy, float radius, SKColor color)
-    {
-        using var paint = new SKPaint
-        {
-            Style = SKPaintStyle.Stroke,
-            Color = color.WithAlpha((byte)(255 * (1 - radius / 300f))),
-            StrokeWidth = 4,
-            IsAntialias = true
-        };
-        canvas.DrawCircle(cx, cy, radius, paint);
-    }
-
-    public static void DrawDarkOverlayWithSpotlight(this SKCanvas canvas, float cx, float cy, float width, float height)
-    {
-        using var overlayPaint = new SKPaint { Color = new SKColor(0, 0, 0, 180) };
-        canvas.DrawRect(new SKRect(0, 0, canvas.LocalClipBounds.Width, canvas.LocalClipBounds.Height), overlayPaint);
-
-        using var eraserPaint = new SKPaint
-        {
-            BlendMode = SKBlendMode.Clear,
-            IsAntialias = true
-        };
-        canvas.DrawRoundRect(new SKRect(cx - width / 2, cy - height / 2, cx + width / 2, cy + height / 2), 20, 20, eraserPaint);
-    }
-
+    
     public static void DrawArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, ArrowStyle style, float strokeWidth)
     {
         switch (style)
@@ -561,6 +536,30 @@ internal static class SkiaSharpExtensions
 
         DrawShape(canvas, shape, centerX, centerY, width, height, cornerRadius, strokePaint);
     }
+
+    public static void DrawHighlightShape(this SKCanvas canvas, SKRect rect, HighlightShape shape)
+    {
+        using var paint = new SKPaint
+        {
+            BlendMode = SKBlendMode.Clear,
+            IsAntialias = true
+        };
+
+        switch (shape)
+        {
+            case HighlightShape.Circle:
+                canvas.DrawCircle(rect.MidX, rect.MidY, Math.Min(rect.Width, rect.Height) / 2, paint);
+                break;
+            case HighlightShape.RoundRectangle:
+                canvas.DrawRoundRect(rect, 20f, 20f, paint);
+                break;
+            case HighlightShape.Rectangle:
+            default:
+                canvas.DrawRect(rect, paint);
+                break;
+        }
+    }
+
 
     private static void DrawShape(SKCanvas canvas, HighlightShape shape, float centerX, float centerY,
         float width, float height, float cornerRadius, SKPaint paint)

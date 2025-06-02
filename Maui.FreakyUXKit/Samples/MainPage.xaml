@@ -15,11 +15,9 @@
                 fc:FreakyCoachmark.DisplayOrder="1"
                 fc:FreakyCoachmark.OverlayMargin="100"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.HighlightShape="RoundRectangle"
+                fc:FreakyCoachmark.HighlightShape="Circle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
-                fc:FreakyCoachmark.ArrowStyle="Sketched"
-                fc:FreakyCoachmark.ArrowStrokeWidth="5"
+                fc:FreakyCoachmark.CoachmarkAnimation="None"
                 fc:FreakyCoachmark.PreferredPosition="Auto"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
@@ -40,7 +38,7 @@
             <Label
                 fc:FreakyCoachmark.DisplayOrder="2"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.CoachmarkAnimation="Pulse"
+                fc:FreakyCoachmark.CoachmarkAnimation="Morph"
                 SemanticProperties.HeadingLevel="Level1"
                 Style="{StaticResource Headline}"
                 Text="Hello, World!">
@@ -59,6 +57,7 @@
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                 SemanticProperties.HeadingLevel="Level2"
+                fc:FreakyCoachmark.CoachmarkAnimation="Pulse"
                 Style="{StaticResource SubHeadline}"
                 Text="Welcome to &#10;.NET Multi-platform App UI">
                 <fc:FreakyCoachmark.OverlayView>
@@ -83,6 +82,7 @@
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightPadding="10"
                 HorizontalOptions="Fill"
+                fc:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                 SemanticProperties.Hint="Counts the number of times you click"
                 Text="Click me">
                 <fc:FreakyCoachmark.OverlayView>

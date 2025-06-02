@@ -2,11 +2,9 @@ namespace Maui.FreakyUXKit;
 
 public enum CoachmarkAnimationStyle
 {
-    None,
-    Focus,
-    Ripple,
-    Pulse,
     Spotlight,
+    Focus,
+    Pulse,
     Arrow,
     Morph
 }   
