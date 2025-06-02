@@ -64,10 +64,6 @@ public static class MauiProgram
 
 ```
 
-The above applies to all the other sub-folders as well.
-
-Deprecated API's from the previous version have also been removed!
-
 ## Activity
 
 Fossa:
