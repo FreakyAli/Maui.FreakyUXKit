@@ -6,5 +6,10 @@ public enum CoachmarkAnimationStyle
     Focus,
     Pulse,
     Arrow,
-    Morph
-}   
+    Morph,
+    LaserSweep,
+    OrbitingParticles,
+    LiquidSplashReveal,
+    BurnThroughReveal,
+    DimensionalPortal
+}
