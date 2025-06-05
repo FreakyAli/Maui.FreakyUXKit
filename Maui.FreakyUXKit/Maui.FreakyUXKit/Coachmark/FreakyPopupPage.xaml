@@ -7,6 +7,7 @@
     xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
     ios:Page.ModalPresentationStyle="OverFullScreen"
     BackgroundColor="Transparent"
+    x:ClassModifier="internal"
     ios:Page.UseSafeArea="True">
     <AbsoluteLayout x:Name="container">
         <AbsoluteLayout.GestureRecognizers>

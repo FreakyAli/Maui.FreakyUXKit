@@ -1,5 +1,3 @@
-using SkiaSharp;
-
 namespace Maui.FreakyUXKit;
 
 public static class FreakyCoachmark
@@ -125,7 +123,7 @@ public static class FreakyCoachmark
             "CoachmarkAnimation",
             typeof(CoachmarkAnimationStyle),
             typeof(FreakyCoachmark),
-            CoachmarkAnimationStyle.None);
+            CoachmarkAnimationStyle.Spotlight);
     public static CoachmarkAnimationStyle GetCoachmarkAnimation(BindableObject view) =>
         (CoachmarkAnimationStyle)view.GetValue(CoachmarkAnimationProperty);
     public static void SetCoachmarkAnimation(BindableObject view, CoachmarkAnimationStyle value) =>
