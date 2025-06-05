@@ -17,7 +17,7 @@
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightShape="Ellipse"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
+                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
                 fc:FreakyCoachmark.PreferredPosition="Auto"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>

@@ -591,7 +591,7 @@ internal static class SkiaSharpExtensions
     internal static void DrawFocusRippleEffect(this SKCanvas canvas, SKRect canvasRect, HighlightShape shape,
         float centerX, float centerY, float targetWidth, float targetHeight, float cornerRadius, float progress, Color focusMauiColor)
     {
-        var focusColor = focusMauiColor.ToSKColor();   // Red color for focus effect
+        var focusColor = focusMauiColor.ToSKColor();
 
         // Calculate the maximum distance from center to any corner of the screen
         float maxDistance = Math.Max(

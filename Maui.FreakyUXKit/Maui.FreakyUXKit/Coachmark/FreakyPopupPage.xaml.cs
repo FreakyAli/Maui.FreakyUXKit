@@ -3,7 +3,7 @@ using SkiaSharp.Views.Maui;
 
 namespace Maui.FreakyUXKit;
 
-public partial class FreakyPopupPage : ContentPage
+internal partial class FreakyPopupPage : ContentPage
 {
     private readonly IEnumerable<View> _views;
     private int _currentIndex;
@@ -37,11 +37,17 @@ public partial class FreakyPopupPage : ContentPage
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
     #endregion
 
-    public FreakyPopupPage(IEnumerable<View> coachMarkViews)
+    internal FreakyPopupPage(IEnumerable<View> coachMarkViews)
     {
         _currentIndex = 0;
         _views = coachMarkViews;
         InitializeComponent();
+    }
+
+    // Prevent android back navigation to ensure user completes all coach marks
+    protected override bool OnBackButtonPressed()
+    {
+        return true;
     }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
