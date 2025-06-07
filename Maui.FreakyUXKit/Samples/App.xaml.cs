@@ -9,6 +9,6 @@ public partial class App : Application
 #nullable enable
 	protected override Window CreateWindow(IActivationState? _)
 	{
-		return new Window(new MainPage());
+		return new Window(new AppShell());
 	}
 }
