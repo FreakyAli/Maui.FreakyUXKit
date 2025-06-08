@@ -13,7 +13,8 @@
     x:DataType="vm:FocusCoachmarkViewModel"
     BackButtonCommand="{Binding BackButtonCommand}"
     BackgroundColor="{StaticResource Primary}"
-    HeaderText="Profile">
+    HeaderText="Profile"
+    Shell.PresentationMode="Modal">
     <ContentPage.Resources>
         <Style TargetType="Label">
             <Setter Property="FontFamily" Value="Segoe UI" />
