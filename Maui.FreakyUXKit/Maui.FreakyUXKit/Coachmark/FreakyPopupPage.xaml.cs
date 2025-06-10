@@ -1,10 +1,11 @@
+using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Views;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
 namespace Maui.FreakyUXKit;
 
-[QueryProperty(nameof(Views), Constants.Coachmarks)]  
-public partial class FreakyPopupPage : ContentPage
+public partial class FreakyPopupPage : Popup
 {
     internal List<View> Views { get; private set; }
     private int _currentIndex;
@@ -38,15 +39,25 @@ public partial class FreakyPopupPage : ContentPage
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
     #endregion
 
-    public FreakyPopupPage()
+    public FreakyPopupPage(List<View> coachMarkViews)
     {
         _currentIndex = 0;
         InitializeComponent();
+        this.Size = new Size(Constants.Width, Constants.Height);
+        Views = coachMarkViews;
+        this.Opened += OnOpened;
     }
 
-    public FreakyPopupPage(List<View> coachMarkViews) : this()
+    private async void OnOpened(object sender, PopupOpenedEventArgs e)
     {
-        Views = coachMarkViews;
+        await Task.Delay(100);
+        ShowCurrentCoachMark();
+    }
+    protected override Task OnClosed(object result, bool wasDismissedByTappingOutsideOfPopup, CancellationToken token = default)
+    {
+        this.Opened -= OnOpened;
+        ClearOverlayViews();
+        return base.OnClosed(result, wasDismissedByTappingOutsideOfPopup, token);
     }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
@@ -54,25 +65,12 @@ public partial class FreakyPopupPage : ContentPage
         await NextCoachMark().ConfigureAwait(false);
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await Task.Delay(100);
-        ShowCurrentCoachMark();
-    }
-
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-        ClearOverlayViews();
-    }
-
     private async Task NextCoachMark()
     {
         _currentIndex++;
         if (_currentIndex >= Views.Count)
         {
-            await Constants.MainPage?.Navigation.PopModalAsync(false);
+            await this.CloseAsync();
         }
         else
         {

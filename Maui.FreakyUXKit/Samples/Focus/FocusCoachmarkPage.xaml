@@ -5,14 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:freakyControls="clr-namespace:Maui.FreakyControls;assembly=Maui.FreakyControls"
     xmlns:fuxk="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
-    xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
     xmlns:views="clr-namespace:Samples"
     xmlns:vm="clr-namespace:Samples.Focus"
     x:Name="this"
     fuxk:FreakyCoachmark.AreCoachmarksEnabled="True"
     x:DataType="vm:FocusCoachmarkViewModel"
     BackButtonCommand="{Binding BackButtonCommand}"
-    BackgroundColor="{StaticResource Primary}"
     HeaderText="Profile"
     Shell.PresentationMode="Modal">
     <ContentPage.Resources>
@@ -322,7 +320,6 @@
                     fuxk:FreakyCoachmark.DisplayOrder="1"
                     fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fuxk:FreakyCoachmark.OwningPage="{x:Reference this}"
-                    touchEffects:TouchEffect.Color="{StaticResource Primary}"
                     AbsoluteLayout.LayoutBounds=".5,0.03,100,100"
                     AbsoluteLayout.LayoutFlags="PositionProportional">
                     <Border
