@@ -1,16 +1,16 @@
-﻿using Maui.FreakyUXKit;
-namespace Samples;
+﻿namespace Samples;
 
-public partial class MainPage : ContentPage
+public partial class MainPage : FreakyBaseContentPage
 {
-	public MainPage()
-	{
-		InitializeComponent();
-	}
+    public MainPage()
+    {
+        InitializeComponent();
+        BindingContext = new MainViewModel();
+    }
 
-	protected override void OnAppearing()
-	{
-		base.OnAppearing();
-	}
-
+    private async void ListView_ItemTapped(System.Object sender, Microsoft.Maui.Controls.ItemTappedEventArgs e)
+    {
+        string route = e.Item.ToString();
+        await Shell.Current.GoToAsync(route);
+    }
 }
