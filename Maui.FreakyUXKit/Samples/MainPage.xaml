@@ -13,14 +13,10 @@
                 HeightRequest="185"
                 SemanticProperties.Description="dot net bot in a race car number eight"
                 fc:FreakyCoachmark.DisplayOrder="1"
-                fc:FreakyCoachmark.OverlayMargin="100"
                 fc:FreakyCoachmark.OwningPage="{Reference page}"
                 fc:FreakyCoachmark.HighlightShape="RoundRectangle"
                 fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
-                fc:FreakyCoachmark.ArrowStyle="Sketched"
-                fc:FreakyCoachmark.ArrowStrokeWidth="5"
-                fc:FreakyCoachmark.PreferredPosition="Auto"
+                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
                 Source="dotnet_bot.png">
                 <fc:FreakyCoachmark.OverlayView>
                     <Border Padding="20" Stroke="Pink" BackgroundColor="White">
