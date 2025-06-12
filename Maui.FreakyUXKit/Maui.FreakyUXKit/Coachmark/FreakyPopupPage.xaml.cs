@@ -42,6 +42,12 @@ public partial class FreakyPopupPage : ContentPage
         _currentIndex = 0;
         _views = coachMarkViews;
         InitializeComponent();
+        this.Loaded += OnLoaded;
+    }
+
+    private void OnLoaded(object sender, EventArgs e)
+    {
+        ShowCurrentCoachMark();
     }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
@@ -49,16 +55,10 @@ public partial class FreakyPopupPage : ContentPage
         await NextCoachMark().ConfigureAwait(false);
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        await Task.Delay(100);
-        ShowCurrentCoachMark();
-    }
-
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+        this.Loaded -= OnLoaded;
         ClearOverlayViews();
     }
 

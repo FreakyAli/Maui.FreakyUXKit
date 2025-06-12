@@ -46,8 +46,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.40" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.40" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.82" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.82" />
+		<PackageReference Include="FreakyControls" Version="0.5.1" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />	
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Images\meatball_icon.svg" />
+	  <EmbeddedResource Include="Resources\Images\back_button.svg" />
+	  <EmbeddedResource Include="Resources\Images\play.svg" />
+	  <EmbeddedResource Include="Resources\Images\bar_chart.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
