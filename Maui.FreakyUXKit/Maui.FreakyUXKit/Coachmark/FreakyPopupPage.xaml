@@ -3,21 +3,22 @@
     x:Class="Maui.FreakyUXKit.FreakyPopupPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:local="clr-namespace:Maui.FreakyUXKit"
+    xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     BackgroundColor="Transparent"
-    xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls">
+    HeightRequest="{x:Static local:Constants.Height}"
+    WidthRequest="{x:Static local:Constants.Width}">
     <AbsoluteLayout x:Name="container">
         <AbsoluteLayout.GestureRecognizers>
-            <TapGestureRecognizer
-                Tapped="OnBackgroundTapped"/>
+            <TapGestureRecognizer Tapped="OnBackgroundTapped" />
         </AbsoluteLayout.GestureRecognizers>
         <skia:SKCanvasView
-            InputTransparent="True"
             x:Name="canvasView"
-            IgnorePixelScaling="true"
             AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
             AbsoluteLayout.LayoutFlags="All"
+            IgnorePixelScaling="true"
+            InputTransparent="True"
             PaintSurface="OnPaintSurface" />
     </AbsoluteLayout>
 </toolkit:Popup>
