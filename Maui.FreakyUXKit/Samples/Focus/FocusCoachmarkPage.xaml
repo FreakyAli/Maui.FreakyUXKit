@@ -261,24 +261,22 @@
                                 VerticalOptions="End">
                                 <Border
                                     Margin="20,0,20,20"
+                                    fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                    fc:FreakyCoachmark.DisplayOrder="2"
+                                    fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                                    fc:FreakyCoachmark.OwningPage="{Reference page}"
+                                    fc:FreakyCoachmark.PreferredPosition="Top"
                                     BackgroundColor="{StaticResource Tertiary}"
                                     Stroke="{StaticResource Tertiary}"
                                     StrokeShape="RoundRectangle 20,20,20,20">
                                     <fc:FreakyCoachmark.OverlayView>
-                                        <Border
-                                            Padding="20"
-                                            BackgroundColor="White"
-                                            Stroke="Pink">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="16" />
-                                            </Border.StrokeShape>
-                                            <StackLayout>
-                                                <Label
-                                                    FontAttributes="Bold"
-                                                    Text="Describe your elements!"
-                                                    TextColor="Black" />
-                                            </StackLayout>
-                                        </Border>
+                                        <VerticalStackLayout BackgroundColor="Green">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="Large"
+                                                Text="Describe your elements!"
+                                                TextColor="White" />
+                                        </VerticalStackLayout>
                                     </fc:FreakyCoachmark.OverlayView>
                                     <Grid ColumnDefinitions="2*,6*,1*">
                                         <Border
@@ -323,27 +321,28 @@
                         </Grid>
                     </Border>
                 </Grid>
-                <ContentView AbsoluteLayout.LayoutBounds=".5,0.03,100,100" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <ContentView
+                    fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                    fc:FreakyCoachmark.DisplayOrder="1"
+                    fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                    fc:FreakyCoachmark.OwningPage="{Reference page}"
+                    fc:FreakyCoachmark.PreferredPosition="Bottom"
+                    AbsoluteLayout.LayoutBounds=".5,0.03,100,100"
+                    AbsoluteLayout.LayoutFlags="PositionProportional">
+                    <fc:FreakyCoachmark.OverlayView>
+                        <VerticalStackLayout BackgroundColor="Green">
+                            <Label
+                                FontAttributes="Bold"
+                                Text="Describe your elements!"
+                                TextColor="White" />
+                        </VerticalStackLayout>
+                    </fc:FreakyCoachmark.OverlayView>
                     <Border
                         Padding="0"
                         Stroke="Transparent"
                         StrokeShape="RoundRectangle 10"
                         StrokeThickness="0">
-                        <freakyControls:FreakyImage
-                            fc:FreakyCoachmark.CoachmarkAnimation="Focus"
-                            fc:FreakyCoachmark.DisplayOrder="1"
-                            fc:FreakyCoachmark.OwningPage="{Reference page}"
-                            Aspect="AspectFit"
-                            Source="{x:Static views:Constants.Profile2}">
-                            <fc:FreakyCoachmark.OverlayView>
-                                <StackLayout>
-                                    <Label
-                                        FontAttributes="Bold"
-                                        Text="Describe your elements!"
-                                        TextColor="White" />
-                                </StackLayout>
-                            </fc:FreakyCoachmark.OverlayView>
-                        </freakyControls:FreakyImage>
+                        <freakyControls:FreakyImage Aspect="AspectFit" Source="{x:Static views:Constants.Profile2}" />
                     </Border>
                 </ContentView>
             </AbsoluteLayout>
