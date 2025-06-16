@@ -1,9 +1,12 @@
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Views;
+using Microsoft.Maui.Layouts;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
 namespace Maui.FreakyUXKit;
 
-public partial class FreakyPopupPage : ContentPage
+public partial class FreakyPopupPage : Popup
 {
     private readonly IEnumerable<View> _views;
     private int _currentIndex;
@@ -39,9 +42,9 @@ public partial class FreakyPopupPage : ContentPage
 
     public FreakyPopupPage(IEnumerable<View> coachMarkViews)
     {
+        InitializeComponent();
         _currentIndex = 0;
         _views = coachMarkViews;
-        InitializeComponent();
         this.Loaded += OnLoaded;
     }
 
@@ -56,11 +59,11 @@ public partial class FreakyPopupPage : ContentPage
         await NextCoachMark().ConfigureAwait(false);
     }
 
-    protected override void OnDisappearing()
+    public override Task CloseAsync(CancellationToken token = default)
     {
-        base.OnDisappearing();
         this.Loaded -= OnLoaded;
         ClearOverlayViews();
+        return base.CloseAsync(token);
     }
 
     private async Task NextCoachMark()
@@ -68,7 +71,7 @@ public partial class FreakyPopupPage : ContentPage
         _currentIndex++;
         if (_currentIndex >= _views.Count())
         {
-            await Constants.MainPage?.Navigation.PopModalAsync(false);
+            await Constants.MainPage?.ClosePopupAsync();
         }
         else
         {
