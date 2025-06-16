@@ -45,8 +45,9 @@ public partial class FreakyPopupPage : ContentPage
         this.Loaded += OnLoaded;
     }
 
-    private void OnLoaded(object sender, EventArgs e)
+    private async void OnLoaded(object sender, EventArgs e)
     {
+        await Task.Delay(100);
         ShowCurrentCoachMark();
     }
 
@@ -173,8 +174,8 @@ public partial class FreakyPopupPage : ContentPage
         
         var size = OverlayView.Measure(widthConstraint, heightConstraint);
         return new Size(
-            Math.Min(size.Request.Width, widthConstraint),
-            Math.Min(size.Request.Height, heightConstraint)
+            Math.Min(size.Width, widthConstraint),
+            Math.Min(size.Height, heightConstraint)
         );
     }
 
