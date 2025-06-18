@@ -31,8 +31,12 @@ public static class ViewExntensions
 
         CGRect convertedFrame = nativeView.ConvertRectToView(nativeView.Bounds, nativeRelativeTo);
 
+        var insets = nativeRelativeTo.SafeAreaInsets;
+        convertedFrame.X -= insets.Left;
+        convertedFrame.Y -= insets.Top;
+
         return new Rect(convertedFrame.X, convertedFrame.Y, convertedFrame.Width, convertedFrame.Height);
-        
+
 #elif ANDROID
         var nativeView = view.Handler.PlatformView as Android.Views.View;
         var nativeRelativeTo = relativeTo.Handler.PlatformView as Android.Views.View;
