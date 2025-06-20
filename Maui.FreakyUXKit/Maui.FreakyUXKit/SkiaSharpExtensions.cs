@@ -451,19 +451,6 @@ internal static class SkiaSharpExtensions
         if (rightSpace >= overlaySize.Width)
             positions[CoachmarkPosition.Right] = rightSpace;
 
-        // Check diagonal positions
-        if (topSpace >= overlaySize.Height && leftSpace >= overlaySize.Width)
-            positions[CoachmarkPosition.TopLeft] = Math.Min(topSpace, leftSpace);
-
-        if (topSpace >= overlaySize.Height && rightSpace >= overlaySize.Width)
-            positions[CoachmarkPosition.TopRight] = Math.Min(topSpace, rightSpace);
-
-        if (bottomSpace >= overlaySize.Height && leftSpace >= overlaySize.Width)
-            positions[CoachmarkPosition.BottomLeft] = Math.Min(bottomSpace, leftSpace);
-
-        if (bottomSpace >= overlaySize.Height && rightSpace >= overlaySize.Width)
-            positions[CoachmarkPosition.BottomRight] = Math.Min(bottomSpace, rightSpace);
-
         // Return position with most space, prefer bottom first, then top
         if (positions.ContainsKey(CoachmarkPosition.Bottom))
             return CoachmarkPosition.Bottom;
@@ -499,26 +486,6 @@ internal static class SkiaSharpExtensions
             CoachmarkPosition.Right => new Thickness(
                 targetBounds.Right + margin,
                 Math.Max(0, targetBounds.Top),
-                0, 0),
-
-            CoachmarkPosition.TopLeft => new Thickness(
-                Math.Max(0, targetBounds.Left - overlaySize.Width - margin),
-                Math.Max(0, targetBounds.Top - overlaySize.Height - margin),
-                0, 0),
-
-            CoachmarkPosition.TopRight => new Thickness(
-                targetBounds.Right + margin,
-                Math.Max(0, targetBounds.Top - overlaySize.Height - margin),
-                0, 0),
-
-            CoachmarkPosition.BottomLeft => new Thickness(
-                Math.Max(0, targetBounds.Left - overlaySize.Width - margin),
-                targetBounds.Bottom + margin,
-                0, 0),
-
-            CoachmarkPosition.BottomRight => new Thickness(
-                targetBounds.Right + margin,
-                targetBounds.Bottom + margin,
                 0, 0),
 
             _ => new Thickness(Math.Max(0, targetBounds.Left), targetBounds.Bottom + margin, 0, 0)

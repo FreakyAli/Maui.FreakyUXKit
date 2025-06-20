@@ -1,104 +1,39 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="Samples.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:fc="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
-    x:Name="page"
-    fc:FreakyCoachmark.AreCoachmarksEnabled="True">
-    <ScrollView>
-        <VerticalStackLayout VerticalOptions="Center" Padding="30,0" Spacing="25">
-            <Image
-                Aspect="AspectFit"
-                HeightRequest="185"
-                SemanticProperties.Description="dot net bot in a race car number eight"
-                fc:FreakyCoachmark.DisplayOrder="1"
-                fc:FreakyCoachmark.OverlayMargin="100"
-                fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.HighlightShape="RoundRectangle"
-                fc:FreakyCoachmark.HighlightShapeCornerRadius="16"
-                fc:FreakyCoachmark.CoachmarkAnimation="Arrow"
-                fc:FreakyCoachmark.ArrowStyle="Sketched"
-                fc:FreakyCoachmark.ArrowStrokeWidth="5"
-                fc:FreakyCoachmark.PreferredPosition="Auto"
-                Source="dotnet_bot.png">
-                <fc:FreakyCoachmark.OverlayView>
-                    <Border Padding="20" Stroke="Pink" BackgroundColor="White">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <StackLayout>
-                            <Label
-                                FontAttributes="Bold"
-                                Text="Describe your elements!"
-                                TextColor="Black" />
-                        </StackLayout>
-                    </Border>
-                </fc:FreakyCoachmark.OverlayView>
-            </Image>
-
-            <Label
-                fc:FreakyCoachmark.DisplayOrder="2"
-                fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.CoachmarkAnimation="Pulse"
-                SemanticProperties.HeadingLevel="Level1"
-                Style="{StaticResource Headline}"
-                Text="Hello, World!">
-                <fc:FreakyCoachmark.OverlayView>
-                    <StackLayout>
-                        <Label
-                            FontAttributes="Bold"
-                            Text="Describe your elements!"
-                            TextColor="White" />
-                    </StackLayout>
-                </fc:FreakyCoachmark.OverlayView>
-            </Label>
-
-            <Label
-                fc:FreakyCoachmark.DisplayOrder="3"
-                fc:FreakyCoachmark.OwningPage="{Reference page}"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                SemanticProperties.HeadingLevel="Level2"
-                Style="{StaticResource SubHeadline}"
-                Text="Welcome to &#10;.NET Multi-platform App UI">
-                <fc:FreakyCoachmark.OverlayView>
-                    <Border
-                        BackgroundColor="BlueViolet"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Start">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <StackLayout>
-                            <Label Text="You can define a custom view to the FreakyCoachmark" />
-                            <Label Text="🤩💕" />
-                        </StackLayout>
-                    </Border>
-                </fc:FreakyCoachmark.OverlayView>
-            </Label>
-
-            <Button
-                x:Name="CounterBtn"
-                fc:FreakyCoachmark.DisplayOrder="2"
-                fc:FreakyCoachmark.OwningPage="{Reference page}"
-                fc:FreakyCoachmark.HighlightPadding="10"
-                HorizontalOptions="Fill"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Text="Click me">
-                <fc:FreakyCoachmark.OverlayView>
-                    <Border
-                        BackgroundColor="Black"
-                        HorizontalOptions="Start"
-                        VerticalOptions="Start">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="16" />
-                        </Border.StrokeShape>
-                        <StackLayout>
-                            <Label Text="Explain about your UI" TextColor="White" />
-                        </StackLayout>
-                    </Border>
-                </fc:FreakyCoachmark.OverlayView>
-            </Button>
-        </VerticalStackLayout>
-    </ScrollView>
+    xmlns:samples="clr-namespace:Samples"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:fuxk="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
+    x:Name="mainPage"
+    x:DataType="samples:MainViewModel">
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="Black" StatusBarStyle="LightContent" />
+    </ContentPage.Behaviors>
+    <CollectionView
+        Margin="10"
+        x:Name="collectionView"
+        HorizontalScrollBarVisibility="Never"
+        ItemSizingStrategy="MeasureFirstItem"
+        ItemsSource="{Binding AnimationTypes}"
+        SelectionMode="None"
+        VerticalScrollBarVisibility="Never">
+        <CollectionView.ItemsLayout>
+            <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="fuxk:CoachmarkAnimationStyle">
+                <Border Stroke="White">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Path=BindingContext.ShowNextPageCommand, Source={x:Reference mainPage}, x:DataType=samples:MainPage}" CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                    <Label
+                        FontAttributes="Bold"
+                        Text="{Binding .}"
+                        TextColor="Black" />
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
 </ContentPage>

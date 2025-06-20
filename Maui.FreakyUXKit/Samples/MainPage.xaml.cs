@@ -1,4 +1,3 @@
-﻿using Maui.FreakyUXKit;
 namespace Samples;
 
 public partial class MainPage : ContentPage
@@ -6,11 +5,6 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
+		BindingContext = new MainViewModel();
 	}
-
-	protected override void OnAppearing()
-	{
-		base.OnAppearing();
-	}
-
 }

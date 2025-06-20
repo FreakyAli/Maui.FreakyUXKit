@@ -31,7 +31,35 @@ public static class ViewExntensions
 
         CGRect convertedFrame = nativeView.ConvertRectToView(nativeView.Bounds, nativeRelativeTo);
 
+        var insets = nativeRelativeTo.SafeAreaInsets;
+        convertedFrame.X -= insets.Left;
+        convertedFrame.Y -= insets.Top;
+
         return new Rect(convertedFrame.X, convertedFrame.Y, convertedFrame.Width, convertedFrame.Height);
+
+#elif ANDROID
+        var nativeView = view.Handler.PlatformView as Android.Views.View;
+        var nativeRelativeTo = relativeTo.Handler.PlatformView as Android.Views.View;
+
+        if (nativeView == null || nativeRelativeTo == null)
+            return Rect.Zero;
+
+        int[] viewLocation = new int[2];
+        int[] relativeLocation = new int[2];
+
+        nativeView.GetLocationOnScreen(viewLocation);
+        nativeRelativeTo.GetLocationOnScreen(relativeLocation);
+
+        double x = viewLocation[0] - relativeLocation[0];
+        double y = viewLocation[1] - relativeLocation[1];
+
+        double width = nativeView.Width / nativeView.Context.Resources.DisplayMetrics.Density;
+        double height = nativeView.Height / nativeView.Context.Resources.DisplayMetrics.Density;
+
+        x /= nativeView.Context.Resources.DisplayMetrics.Density;
+        y /= nativeView.Context.Resources.DisplayMetrics.Density;
+
+        return new Rect(x, y, width, height);
 
 #elif WINDOWS
         var nativeView = view.Handler.PlatformView as FrameworkElement;
