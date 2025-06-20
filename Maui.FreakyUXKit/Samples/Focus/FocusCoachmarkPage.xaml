@@ -266,7 +266,7 @@
                                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                                     fc:FreakyCoachmark.OverlayMargin="50"
                                     fc:FreakyCoachmark.OwningPage="{Reference page}"
-                                    fc:FreakyCoachmark.PreferredPosition="Top"
+                                    fc:FreakyCoachmark.PreferredPosition="Left"
                                     BackgroundColor="{StaticResource Tertiary}"
                                     Stroke="{StaticResource Tertiary}"
                                     StrokeShape="RoundRectangle 20,20,20,20">
@@ -327,11 +327,11 @@
                     fc:FreakyCoachmark.DisplayOrder="1"
                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fc:FreakyCoachmark.OwningPage="{Reference page}"
-                    fc:FreakyCoachmark.PreferredPosition="BottomLeft"
+                    fc:FreakyCoachmark.PreferredPosition="Right"
                     AbsoluteLayout.LayoutBounds=".5,0.03,100,100"
                     AbsoluteLayout.LayoutFlags="PositionProportional">
                     <fc:FreakyCoachmark.OverlayView>
-                        <VerticalStackLayout BackgroundColor="Red" >
+                        <VerticalStackLayout BackgroundColor="Red">
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="Large"

@@ -3,7 +3,7 @@
 public partial class App : Application
 {
 	#nullable enable
-	internal static Page? CurrentPage => Current.Windows.FirstOrDefault()?.Page;
+	internal static Page? CurrentPage => Current?.Windows?.FirstOrDefault()?.Page;
 	#nullable disable
 	internal static NavigationPage CurrentNavigation { get; set; }
 
