@@ -16,5 +16,4 @@ public class FreakyBaseViewModel : ObservableObject
     {
         await App.CurrentNavigation.PopAsync();
     }
-
 }
