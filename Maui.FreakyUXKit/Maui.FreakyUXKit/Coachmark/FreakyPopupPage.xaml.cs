@@ -11,7 +11,7 @@ public partial class FreakyPopupPage : Popup
     private int _currentIndex;
     private SKRect _currentBounds;
     private readonly List<View> _overlays = new();
-    
+
     // Animation system properties
     private System.Timers.Timer _animationTimer;
     private float _animationProgress = 0f;
@@ -87,7 +87,7 @@ public partial class FreakyPopupPage : Popup
             return;
 
         var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
-        
+
         // Apply highlight padding to expand the highlight area
         var paddedBounds = new Rect(
             bounds.X - HighlightPadding,
@@ -95,7 +95,7 @@ public partial class FreakyPopupPage : Popup
             bounds.Width + (HighlightPadding * 2),
             bounds.Height + (HighlightPadding * 2)
         );
-        
+
         _currentBounds = new SKRect(
             (float)paddedBounds.X,
             (float)paddedBounds.Y,
@@ -107,7 +107,7 @@ public partial class FreakyPopupPage : Popup
         var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
         var overlaySize = MeasureOverlayView();
         var containerBounds = new SKRect(0, 0, (float)container.Width, (float)container.Height);
-        
+
         // Determine final position using original target bounds (not padded)
         var originalSkRect = new SKRect(
             (float)originalBounds.X,
@@ -116,14 +116,14 @@ public partial class FreakyPopupPage : Popup
             (float)(originalBounds.Y + originalBounds.Height)
         );
         var finalPosition = DetermineOverlayPosition(originalSkRect, containerBounds, overlaySize);
-        
+
         // Calculate and apply margin (use original bounds for overlay positioning)
         var margin = finalPosition.CalculateOverlayMargin(originalSkRect, overlaySize, containerBounds, OverlayMargin);
         OverlayView.Margin = margin;
-        
+
         // Set width constraints based on position (use original bounds)
         SetOverlayConstraints(finalPosition, overlaySize, originalSkRect);
-        
+
         container.Children.Add(OverlayView);
         _overlays.Add(OverlayView);
 
@@ -139,7 +139,7 @@ public partial class FreakyPopupPage : Popup
             if (HasEnoughSpace(PreferredPosition, targetBounds, containerBounds, overlaySize))
                 return PreferredPosition;
         }
-        
+
         // Fall back to automatic calculation
         return targetBounds.CalculateOptimalPosition(containerBounds, overlaySize, OverlayMargin);
     }
@@ -147,58 +147,25 @@ public partial class FreakyPopupPage : Popup
     private bool HasEnoughSpace(CoachmarkPosition position, SKRect targetBounds, SKRect containerBounds, Size overlaySize)
     {
         var margin = OverlayMargin;
-        
+
         return position switch
         {
             CoachmarkPosition.Top => targetBounds.Top >= overlaySize.Height + margin,
             CoachmarkPosition.Bottom => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin,
             CoachmarkPosition.Left => targetBounds.Left >= overlaySize.Width + margin,
             CoachmarkPosition.Right => containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
-            CoachmarkPosition.TopLeft => targetBounds.Top >= overlaySize.Height + margin && 
+            CoachmarkPosition.TopLeft => targetBounds.Top >= overlaySize.Height + margin &&
                                        targetBounds.Left >= overlaySize.Width + margin,
-            CoachmarkPosition.TopRight => targetBounds.Top >= overlaySize.Height + margin && 
+            CoachmarkPosition.TopRight => targetBounds.Top >= overlaySize.Height + margin &&
                                         containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
-            CoachmarkPosition.BottomLeft => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin && 
+            CoachmarkPosition.BottomLeft => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin &&
                                           targetBounds.Left >= overlaySize.Width + margin,
-            CoachmarkPosition.BottomRight => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin && 
+            CoachmarkPosition.BottomRight => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin &&
                                            containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
             _ => true
         };
     }
-
-    private Size MeasureOverlayView()
-    {
-        if (OverlayView == null) return new Size(200, 100);
-        
-        // Measure the overlay view to get its desired size
-        var widthConstraint = container.Width * 0.8; // Max 80% of container width
-        var heightConstraint = container.Height * 0.6; // Max 60% of container height
-        
-        var size = OverlayView.Measure(widthConstraint, heightConstraint);
-        return new Size(
-            Math.Min(size.Width, widthConstraint),
-            Math.Min(size.Height, heightConstraint)
-        );
-    }
-
-    private void SetOverlayConstraints(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
-    {
-        switch (position)
-        {
-            case CoachmarkPosition.Left:
-            case CoachmarkPosition.Right:
-            case CoachmarkPosition.TopLeft:
-            case CoachmarkPosition.TopRight:
-            case CoachmarkPosition.BottomLeft:
-            case CoachmarkPosition.BottomRight:
-                OverlayView.MaximumWidthRequest = overlaySize.Width;
-                break;
-            default:
-                OverlayView.MaximumWidthRequest = originalBounds.Width;
-                break;
-        }
-    }
-
+    
     private void ResetAnimationState()
     {
         _hasAnimationPhaseCompleted = false;
@@ -299,13 +266,21 @@ public partial class FreakyPopupPage : Popup
 
     private void RenderFocusAnimation(SKCanvas canvas, SKRect rect, float highX, float highY, SKRect highlightRect)
     {
-        float width = highlightRect.Width * _pulseScale;
-        float height = highlightRect.Height * _pulseScale;
+        float width = highlightRect.Width;
+        float height = highlightRect.Height;
 
         if (_animationProgress <= FocusRipplePhaseEnd)
         {
-            // Phase 1: Focus ripple convergence
-            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, FocusAnimationColor);
+            // Phase 1: Always draw basic background and highlight first
+            canvas.DrawBasicBackgroundOverlay(rect);
+            canvas.DrawHighlightCutOut(CurrentShape, highX, highY, width, height, CornerRadius);
+            canvas.DrawHighlightStroke(CurrentShape, highX, highY, width, height);
+
+            // Then add ripple effect on top (only if progress > 0)
+            if (_animationProgress > 0)
+            {
+                canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, FocusAnimationColor);
+            }
         }
         else if (_animationProgress <= FocusTransitionPhaseEnd)
         {
@@ -314,11 +289,13 @@ public partial class FreakyPopupPage : Popup
         }
         else
         {
-            // Phase 3: Pulsing highlight on focus background
-            DrawFocusPulsingHighlight(canvas, rect, highX, highY, width, height);
+            // Phase 3: Pulsing highlight on focus background - use pulse scale here
+            float pulsedWidth = highlightRect.Width * _pulseScale;
+            float pulsedHeight = highlightRect.Height * _pulseScale;
+            DrawFocusPulsingHighlight(canvas, rect, highX, highY, pulsedWidth, pulsedHeight);
         }
     }
-    
+
     private void RenderRippleAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
     {
         float rippleRadius = bounds.Width * (_animationProgress * 1.5f);
@@ -339,7 +316,7 @@ public partial class FreakyPopupPage : Popup
     {
         canvas.DrawDarkOverlayWithSpotlight(x, y, bounds.Width, bounds.Height);
     }
-    
+
     private SKPoint GetClosestPointOnRect(SKRect rect, SKPoint point)
     {
         // Clamp the point coordinates inside the rect
@@ -473,7 +450,7 @@ public partial class FreakyPopupPage : Popup
         DrawShapeStroke(canvas, CurrentShape, highX, highY, width, height, strokePaint);
     }
 
-    private void DrawShapeStroke(SKCanvas canvas, HighlightShape shape, float centerX, float centerY, 
+    private void DrawShapeStroke(SKCanvas canvas, HighlightShape shape, float centerX, float centerY,
         float width, float height, SKPaint paint)
     {
         switch (shape)
@@ -483,15 +460,15 @@ public partial class FreakyPopupPage : Popup
                 canvas.DrawCircle(centerX, centerY, radius, paint);
                 break;
             case HighlightShape.Ellipse:
-                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), paint);
                 break;
             case HighlightShape.Rectangle:
-                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), paint);
                 break;
             default: // RoundRectangle
-                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), CornerRadius), paint);
                 break;
         }
@@ -527,7 +504,7 @@ public partial class FreakyPopupPage : Popup
         {
             // Pulse phase - update pulse scale
             UpdateFocusPulseScale();
-            
+
             // Keep animation progress above pulse threshold
             if (_animationProgress < 1f)
                 _animationProgress += 0.001f;
@@ -569,9 +546,131 @@ public partial class FreakyPopupPage : Popup
         _animationTimer?.Stop();
         _animationTimer?.Dispose();
         _animationTimer = null;
-        
+
         ResetAnimationState();
     }
+
+    private Size MeasureOverlayView()
+    {
+        if (OverlayView == null) return new Size(200, 100);
+
+        // Ensure the overlay is properly added to the visual tree for measurement
+        if (OverlayView.Parent == null)
+        {
+            container.Children.Add(OverlayView);
+        }
+
+        // Get container constraints
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+
+        // Calculate maximum available space (leaving margins for positioning)
+        var maxAvailableWidth = containerWidth * 0.9; // 90% of container width
+        var maxAvailableHeight = containerHeight * 0.7; // 70% of container height
+
+        // First measurement: Get natural size with generous constraints
+        var naturalSize = OverlayView.Measure(maxAvailableWidth, maxAvailableHeight);
+
+        // Calculate the target bounds for positioning context
+        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
+        var targetRect = new SKRect(
+            (float)originalBounds.X,
+            (float)originalBounds.Y,
+            (float)(originalBounds.X + originalBounds.Width),
+            (float)(originalBounds.Y + originalBounds.Height)
+        );
+
+        // Determine optimal position to calculate space constraints
+        var containerRect = new SKRect(0, 0, (float)containerWidth, (float)containerHeight);
+        var preliminaryPosition = DetermineOverlayPosition(targetRect, containerRect, naturalSize);
+
+        // Calculate position-specific width constraints
+        var maxWidthForPosition = CalculateMaxWidthForPosition(preliminaryPosition, targetRect, containerRect);
+
+        // If natural width exceeds position-specific constraint, re-measure with tighter width
+        if (naturalSize.Width > maxWidthForPosition)
+        {
+            var constrainedSize = OverlayView.Measure(maxWidthForPosition, maxAvailableHeight);
+            return new Size(
+                Math.Min(constrainedSize.Width, maxWidthForPosition),
+                Math.Min(constrainedSize.Height, maxAvailableHeight)
+            );
+        }
+
+        // Return natural size if it fits within all constraints
+        return new Size(
+            Math.Min(naturalSize.Width, maxAvailableWidth),
+            Math.Min(naturalSize.Height, maxAvailableHeight)
+        );
+    }
+
+    private double CalculateMaxWidthForPosition(CoachmarkPosition position, SKRect targetBounds, SKRect containerBounds)
+    {
+        var margin = OverlayMargin;
+
+        return position switch
+        {
+            CoachmarkPosition.Left => targetBounds.Left - margin,
+            CoachmarkPosition.Right => containerBounds.Width - targetBounds.Right - margin,
+            CoachmarkPosition.TopLeft => targetBounds.Left - margin,
+            CoachmarkPosition.TopRight => containerBounds.Width - targetBounds.Right - margin,
+            CoachmarkPosition.BottomLeft => targetBounds.Left - margin,
+            CoachmarkPosition.BottomRight => containerBounds.Width - targetBounds.Right - margin,
+            CoachmarkPosition.Top => containerBounds.Width * 0.8, // 80% for top/bottom positions
+            CoachmarkPosition.Bottom => containerBounds.Width * 0.8,
+            _ => containerBounds.Width * 0.9 // Default to 90% of container width
+        };
+    }
+
+    private void SetOverlayConstraints(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
+    {
+        // Clear any previous constraints
+        OverlayView.MaximumWidthRequest = -1;
+        OverlayView.MaximumHeightRequest = -1;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // Set appropriate width constraints based on position
+        switch (position)
+        {
+            case CoachmarkPosition.Left:
+            case CoachmarkPosition.Right:
+                // Side positions: Use calculated width and allow height to adjust
+                OverlayView.MaximumWidthRequest = overlaySize.Width;
+                OverlayView.WidthRequest = overlaySize.Width;
+                break;
+
+            case CoachmarkPosition.TopLeft:
+            case CoachmarkPosition.TopRight:
+            case CoachmarkPosition.BottomLeft:
+            case CoachmarkPosition.BottomRight:
+                // Corner positions: Use calculated width
+                OverlayView.MaximumWidthRequest = overlaySize.Width;
+                OverlayView.WidthRequest = overlaySize.Width;
+                break;
+
+            case CoachmarkPosition.Top:
+            case CoachmarkPosition.Bottom:
+                // Top/Bottom positions: Allow wider but constrain to container
+                var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+                var maxWidth = Math.Min(overlaySize.Width, containerWidth * 0.8);
+                OverlayView.MaximumWidthRequest = maxWidth;
+                OverlayView.WidthRequest = maxWidth;
+                break;
+
+            default:
+                // Auto position: Use calculated size
+                OverlayView.MaximumWidthRequest = overlaySize.Width;
+                OverlayView.WidthRequest = overlaySize.Width;
+                break;
+        }
+
+        // Set height constraints to prevent overflow
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+        var maxHeight = Math.Min(overlaySize.Height, containerHeight * 0.7);
+        OverlayView.MaximumHeightRequest = maxHeight;
+        OverlayView.HeightRequest = maxHeight;
+    }
     #endregion
-    
+
 }

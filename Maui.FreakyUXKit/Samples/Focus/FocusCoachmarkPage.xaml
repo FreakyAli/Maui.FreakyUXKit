@@ -264,6 +264,7 @@
                                     fc:FreakyCoachmark.CoachmarkAnimation="Focus"
                                     fc:FreakyCoachmark.DisplayOrder="2"
                                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                                    fc:FreakyCoachmark.OverlayMargin="50"
                                     fc:FreakyCoachmark.OwningPage="{Reference page}"
                                     fc:FreakyCoachmark.PreferredPosition="Top"
                                     BackgroundColor="{StaticResource Tertiary}"
@@ -326,14 +327,25 @@
                     fc:FreakyCoachmark.DisplayOrder="1"
                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fc:FreakyCoachmark.OwningPage="{Reference page}"
-                    fc:FreakyCoachmark.PreferredPosition="Bottom"
+                    fc:FreakyCoachmark.PreferredPosition="BottomLeft"
                     AbsoluteLayout.LayoutBounds=".5,0.03,100,100"
                     AbsoluteLayout.LayoutFlags="PositionProportional">
                     <fc:FreakyCoachmark.OverlayView>
-                        <VerticalStackLayout BackgroundColor="Green">
+                        <VerticalStackLayout BackgroundColor="Red" >
                             <Label
                                 FontAttributes="Bold"
+                                FontSize="Large"
                                 Text="Describe your elements!"
+                                TextColor="White" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="Large"
+                                Text="This could be going into details"
+                                TextColor="White" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="Large"
+                                Text="Do whatever you need I guess"
                                 TextColor="White" />
                         </VerticalStackLayout>
                     </fc:FreakyCoachmark.OverlayView>
