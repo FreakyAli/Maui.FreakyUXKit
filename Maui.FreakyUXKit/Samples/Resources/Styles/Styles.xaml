@@ -49,6 +49,7 @@
         x:Key="PrimaryButtonStyle"
         ApplyToDerivedTypes="True"
         TargetType="Button">
+        <Setter Property="Command" Value="{Binding HireCommand}"/>
         <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
         <Setter Property="TextColor" Value="{StaticResource Secondary}" />
     </Style>
@@ -57,6 +58,7 @@
         x:Key="SecondaryButtonStyle"
         ApplyToDerivedTypes="True"
         TargetType="Button">
+        <Setter Property="Command" Value="{Binding FollowCommand}"/>
         <Setter Property="BackgroundColor" Value="{StaticResource Quarternary}" />
         <Setter Property="TextColor" Value="{StaticResource Primary}" />
     </Style>
