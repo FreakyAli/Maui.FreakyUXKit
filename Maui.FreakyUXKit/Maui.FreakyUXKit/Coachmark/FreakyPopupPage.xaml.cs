@@ -651,6 +651,202 @@ public partial class FreakyPopupPage : Popup
         };
     }
 
+    // Add this method to ensure overlay stays within screen bounds
+    private Thickness EnsureOverlayWithinBounds(Thickness calculatedMargin, Size overlaySize, SKRect containerBounds)
+    {
+        var left = calculatedMargin.Left;
+        var top = calculatedMargin.Top;
+        var overlayWidth = overlaySize.Width;
+        var overlayHeight = overlaySize.Height;
+
+        // Ensure overlay doesn't go beyond left edge
+        if (left < 0)
+        {
+            left = 0;
+        }
+
+        // Ensure overlay doesn't go beyond top edge
+        if (top < 0)
+        {
+            top = 0;
+        }
+
+        // Ensure overlay doesn't go beyond right edge
+        if (left + overlayWidth > containerBounds.Width)
+        {
+            left = containerBounds.Width - overlayWidth;
+            // If still negative, it means overlay is too wide for screen
+            if (left < 0)
+            {
+                left = 0;
+                // In this case, the overlay width constraint should handle the overflow
+            }
+        }
+
+        // Ensure overlay doesn't go beyond bottom edge
+        if (top + overlayHeight > containerBounds.Height)
+        {
+            top = containerBounds.Height - overlayHeight;
+            // If still negative, it means overlay is too tall for screen
+            if (top < 0)
+            {
+                top = 0;
+                // In this case, the overlay height constraint should handle the overflow
+            }
+        }
+
+        return new Thickness(left, top, 0, 0);
+    }
+
+    // Enhanced CalculateOverlayMargin method with boundary checking
+    private Thickness CalculateOverlayMarginWithBounds(CoachmarkPosition position, SKRect targetBounds, Size overlaySize, SKRect containerBounds, float margin)
+    {
+        var targetCenterX = targetBounds.MidX;
+        var targetCenterY = targetBounds.MidY;
+        var overlayHalfWidth = (float)(overlaySize.Width / 2);
+        var overlayHalfHeight = (float)(overlaySize.Height / 2);
+
+        Thickness calculatedMargin = position switch
+        {
+            CoachmarkPosition.Top => new Thickness(
+                targetCenterX - overlayHalfWidth,
+                targetBounds.Top - overlaySize.Height - margin,
+                0, 0),
+
+            CoachmarkPosition.Bottom => new Thickness(
+                targetCenterX - overlayHalfWidth,
+                targetBounds.Bottom + margin,
+                0, 0),
+
+            CoachmarkPosition.Left => new Thickness(
+                targetBounds.Left - overlaySize.Width - margin,
+                targetCenterY - overlayHalfHeight,
+                0, 0),
+
+            CoachmarkPosition.Right => new Thickness(
+                targetBounds.Right + margin,
+                targetCenterY - overlayHalfHeight,
+                0, 0),
+
+            _ => position.CalculateOverlayMargin(targetBounds, overlaySize, containerBounds, margin)
+        };
+
+        // Ensure the calculated margin keeps overlay within bounds
+        return EnsureOverlayWithinBounds(calculatedMargin, overlaySize, containerBounds);
+    }
+
+    // Enhanced MeasureOverlayView with strict screen constraints
+    private Size MeasureOverlayViewWithScreenConstraints()
+    {
+        if (OverlayView == null) return new Size(200, 100);
+
+        // Get actual container/screen dimensions
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+
+        // Add some padding to prevent overlay from touching screen edges
+        var screenPadding = 10;
+        var maxScreenWidth = containerWidth - (screenPadding * 2);
+        var maxScreenHeight = containerHeight - (screenPadding * 2);
+
+        // Temporarily add to container for measurement if not already present
+        bool wasTemporarilyAdded = false;
+        if (OverlayView.Parent == null)
+        {
+            container.Children.Add(OverlayView);
+            wasTemporarilyAdded = true;
+        }
+
+        // Calculate target-aware constraints
+        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
+        var targetRect = new SKRect(
+            (float)originalBounds.X,
+            (float)originalBounds.Y,
+            (float)(originalBounds.X + originalBounds.Width),
+            (float)(originalBounds.Y + originalBounds.Height)
+        );
+
+        var containerRect = new SKRect(0, 0, (float)containerWidth, (float)containerHeight);
+
+        // First measurement with generous constraints
+        var naturalSize = OverlayView.Measure(maxScreenWidth, maxScreenHeight);
+
+        // Determine position to calculate space-specific constraints
+        var preliminaryPosition = DetermineOverlayPosition(targetRect, containerRect, naturalSize);
+        var maxWidthForPosition = CalculateMaxWidthForPosition(preliminaryPosition, targetRect, containerRect);
+
+        // Apply screen width constraint
+        var finalMaxWidth = Math.Min(maxWidthForPosition, maxScreenWidth);
+
+        // Re-measure if needed
+        Size finalSize;
+        if (naturalSize.Width > finalMaxWidth)
+        {
+            var constrainedSize = OverlayView.Measure(finalMaxWidth, maxScreenHeight);
+            finalSize = new Size(
+                Math.Min(constrainedSize.Width, finalMaxWidth),
+                Math.Min(constrainedSize.Height, maxScreenHeight)
+            );
+        }
+        else
+        {
+            finalSize = new Size(
+                Math.Min(naturalSize.Width, maxScreenWidth),
+                Math.Min(naturalSize.Height, maxScreenHeight)
+            );
+        }
+
+        // Remove from container if we added it temporarily
+        if (wasTemporarilyAdded)
+        {
+            container.Children.Remove(OverlayView);
+        }
+
+        return finalSize;
+    }
+
+    // Enhanced SetOverlayConstraints with screen bounds
+    private void SetOverlayConstraintsWithScreenBounds(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
+    {
+        // Get screen dimensions
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+        var screenPadding = 10;
+
+        // Clear any previous constraints
+        OverlayView.MaximumWidthRequest = -1;
+        OverlayView.MaximumHeightRequest = -1;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // Calculate absolute maximum dimensions (screen bounds minus padding)
+        var absoluteMaxWidth = containerWidth - (screenPadding * 2);
+        var absoluteMaxHeight = containerHeight - (screenPadding * 2);
+
+        // Set width constraints based on position, but never exceed screen bounds
+        double maxWidth = position switch
+        {
+            CoachmarkPosition.Left or CoachmarkPosition.Right =>
+                Math.Min(overlaySize.Width, absoluteMaxWidth),
+            CoachmarkPosition.Top or CoachmarkPosition.Bottom =>
+                Math.Min(Math.Min(overlaySize.Width, containerWidth * 0.8), absoluteMaxWidth),
+            _ => Math.Min(overlaySize.Width, absoluteMaxWidth)
+        };
+
+        // Set height constraints - never exceed screen bounds
+        var maxHeight = Math.Min(overlaySize.Height, absoluteMaxHeight);
+
+        // Apply constraints
+        OverlayView.MaximumWidthRequest = maxWidth;
+        OverlayView.WidthRequest = maxWidth;
+        OverlayView.MaximumHeightRequest = maxHeight;
+        OverlayView.HeightRequest = maxHeight;
+
+        // Ensure the view respects these bounds
+        OverlayView.HorizontalOptions = LayoutOptions.Fill;
+        OverlayView.VerticalOptions = LayoutOptions.Fill;
+    }
+
     private void ShowCurrentCoachMark()
     {
         ClearOverlayViews();
@@ -676,10 +872,10 @@ public partial class FreakyPopupPage : Popup
             (float)(paddedBounds.Y + paddedBounds.Height)
         );
 
-        // Calculate overlay size BEFORE determining position
-        var overlaySize = MeasureOverlayView();
+        // Calculate overlay size with screen constraints
+        var overlaySize = MeasureOverlayViewWithScreenConstraints();
 
-        // Use original bounds for positioning calculations (not padded)
+        // Use original bounds for positioning calculations
         var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
         var containerBounds = new SKRect(0, 0, (float)container.Width, (float)container.Height);
         var originalSkRect = new SKRect(
@@ -692,11 +888,11 @@ public partial class FreakyPopupPage : Popup
         // Determine final position
         var finalPosition = DetermineOverlayPosition(originalSkRect, containerBounds, overlaySize);
 
-        // Set width constraints BEFORE adding to container
-        SetOverlayConstraints(finalPosition, overlaySize, originalSkRect);
+        // Set constraints with screen bounds checking
+        SetOverlayConstraintsWithScreenBounds(finalPosition, overlaySize, originalSkRect);
 
-        // Calculate margin using our custom logic
-        var margin = CalculateOverlayMargin(finalPosition, originalSkRect, overlaySize, containerBounds, OverlayMargin);
+        // Calculate margin with boundary checking
+        var margin = CalculateOverlayMarginWithBounds(finalPosition, originalSkRect, overlaySize, containerBounds, OverlayMargin);
         OverlayView.Margin = margin;
 
         // Add to container after all constraints are set

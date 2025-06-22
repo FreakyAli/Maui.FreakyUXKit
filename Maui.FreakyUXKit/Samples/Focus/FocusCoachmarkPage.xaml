@@ -291,7 +291,7 @@
                                 <Border
                                     Margin="20,0,20,20"
                                     fc:FreakyCoachmark.CoachmarkAnimation="Focus"
-                                    fc:FreakyCoachmark.DisplayOrder="1"
+                                    fc:FreakyCoachmark.DisplayOrder="2"
                                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                                     fc:FreakyCoachmark.OverlayMargin="50"
                                     fc:FreakyCoachmark.OwningPage="{Reference page}"
@@ -304,17 +304,7 @@
                                             <Label
                                                 FontAttributes="Bold"
                                                 FontSize="Large"
-                                                Text="Describe your elements!"
-                                                TextColor="White" />
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="Large"
-                                                Text="This could be going into details"
-                                                TextColor="White" />
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="Large"
-                                                Text="Do whatever you need I guess"
+                                                Text="The elements can be a View with a complex structure!"
                                                 TextColor="White" />
                                         </VerticalStackLayout>
                                     </fc:FreakyCoachmark.OverlayView>
@@ -363,7 +353,7 @@
                 </Grid>
                 <ContentView
                     fc:FreakyCoachmark.CoachmarkAnimation="Focus"
-                    fc:FreakyCoachmark.DisplayOrder="2"
+                    fc:FreakyCoachmark.DisplayOrder="1"
                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fc:FreakyCoachmark.OwningPage="{Reference page}"
                     fc:FreakyCoachmark.PreferredPosition="Right"
@@ -374,7 +364,17 @@
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="Large"
-                                Text="The elements can be a View with a complex structure!"
+                                Text="Describe your elements!"
+                                TextColor="White" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="Large"
+                                Text="This could be going into details"
+                                TextColor="White" />
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="Large"
+                                Text="Do whatever you need I guess"
                                 TextColor="White" />
                         </VerticalStackLayout>
                     </fc:FreakyCoachmark.OverlayView>
