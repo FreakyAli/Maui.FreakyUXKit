@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
 using Maui.FreakyUXKit;
-using Samples.Focus;
 
 namespace Samples;
 
@@ -10,16 +9,23 @@ public partial class MainViewModel : FreakyBaseViewModel
 
     public MainViewModel()
     {
-        AnimationTypes = Enum.GetValues(typeof(CoachmarkAnimationStyle)).Cast<CoachmarkAnimationStyle>().ToList();
+        AnimationTypes = Enum.GetValues<CoachmarkAnimationStyle>().Cast<CoachmarkAnimationStyle>().ToList();
+        AnimationTypes.Remove(CoachmarkAnimationStyle.None);
     }
-    
+
     [RelayCommand]
     private void ShowNextPage(CoachmarkAnimationStyle selection)
     {
         switch (selection)
         {
             case CoachmarkAnimationStyle.Focus:
-               App.CurrentPage.Navigation.PushAsync(new FocusCoachmarkPage()); 
+                Shell.Current.GoToAsync(AppShell.focus);
+                break;
+            case CoachmarkAnimationStyle.Arrow:
+                Shell.Current.GoToAsync(AppShell.arrow);
+                break;
+            case CoachmarkAnimationStyle.Spotlight:
+                Shell.Current.GoToAsync(AppShell.spotlight);
                 break;
             default:
                 break;

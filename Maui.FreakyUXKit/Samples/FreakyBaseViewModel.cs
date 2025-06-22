@@ -14,6 +14,6 @@ public class FreakyBaseViewModel : ObservableObject
 
     private async void ExecuteOnBackButtonClicked()
     {
-        await App.CurrentNavigation.PopAsync();
+        await Shell.Current.GoToAsync("..");
     }
 }

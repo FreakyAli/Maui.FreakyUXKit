@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <views:FreakyBaseContentPage
-    x:Class="Samples.Focus.FocusCoachmarkPage"
+    x:Class="Samples.Spotlight.SpotlightCoachmarkPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:fuxk="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
     xmlns:freakyControls="clr-namespace:Maui.FreakyControls;assembly=Maui.FreakyControls"
+    xmlns:fuxk="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
     xmlns:views="clr-namespace:Samples"
-    xmlns:vm="clr-namespace:Samples.Focus"
+    xmlns:vm="clr-namespace:Samples.Spotlight"
     x:Name="page"
     fuxk:FreakyCoachmark.AreCoachmarksEnabled="True"
-    x:DataType="vm:FocusCoachmarkViewModel"
+    x:DataType="vm:SpotlightViewModel"
     BackButtonCommand="{Binding BackButtonCommand}"
     HeaderText="Profile">
     <ContentPage.Resources>
@@ -58,9 +58,9 @@
                             ColumnSpacing="30">
                             <Button
                                 Grid.Column="0"
-                                fuxk:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                fuxk:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                                 fuxk:FreakyCoachmark.DisplayOrder="3"
-                                fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                                fuxk:FreakyCoachmark.OverlayMargin="100"
                                 fuxk:FreakyCoachmark.OwningPage="{Reference page}"
                                 fuxk:FreakyCoachmark.PreferredPosition="Right"
                                 ImageSource="briefuxkase.png"
@@ -78,21 +78,23 @@
                             </Button>
                             <Button
                                 Grid.Column="1"
-                                fuxk:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                fuxk:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                                 fuxk:FreakyCoachmark.DisplayOrder="4"
-                                fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                                 fuxk:FreakyCoachmark.OwningPage="{Reference page}"
                                 fuxk:FreakyCoachmark.PreferredPosition="Right"
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Text="Follow">
                                 <fuxk:FreakyCoachmark.OverlayView>
-                                    <VerticalStackLayout>
+                                    <Border
+                                        Padding="10"
+                                        BackgroundColor="{StaticResource White}"
+                                        StrokeShape="RoundRectangle 10">
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="Large"
                                             Text="Follow me for more!"
-                                            TextColor="White" />
-                                    </VerticalStackLayout>
+                                            TextColor="Black" />
+                                    </Border>
                                 </fuxk:FreakyCoachmark.OverlayView>
                             </Button>
                         </Grid>
@@ -290,10 +292,10 @@
                                 VerticalOptions="End">
                                 <Border
                                     Margin="20,0,20,20"
-                                    fuxk:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                    fuxk:FreakyCoachmark.ArrowStyle="Sketched"
+                                    fuxk:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                                     fuxk:FreakyCoachmark.DisplayOrder="2"
-                                    fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
-                                    fuxk:FreakyCoachmark.OverlayMargin="50"
+                                    fuxk:FreakyCoachmark.OverlayMargin="100"
                                     fuxk:FreakyCoachmark.OwningPage="{Reference page}"
                                     fuxk:FreakyCoachmark.PreferredPosition="Top"
                                     BackgroundColor="{StaticResource Tertiary}"
@@ -352,9 +354,9 @@
                     </Border>
                 </Grid>
                 <ContentView
-                    fuxk:FreakyCoachmark.CoachmarkAnimation="Focus"
+                    fuxk:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                     fuxk:FreakyCoachmark.DisplayOrder="1"
-                    fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                    fuxk:FreakyCoachmark.OverlayMargin="100"
                     fuxk:FreakyCoachmark.OwningPage="{Reference page}"
                     fuxk:FreakyCoachmark.PreferredPosition="Right"
                     AbsoluteLayout.LayoutBounds=".5,0.03,100,100"

@@ -7,7 +7,6 @@ public partial class FreakyBaseContentPage : ContentPage
     public FreakyBaseContentPage()
     {
         InitializeComponent();
-        Shell.SetNavBarIsVisible(this, false);
     }
 
     public ICommand BackButtonCommand

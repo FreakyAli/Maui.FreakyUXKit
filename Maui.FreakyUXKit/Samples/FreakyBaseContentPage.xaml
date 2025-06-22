@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:constants="clr-namespace:Samples"
     NavigationPage.HasNavigationBar="False"
-    Shell.NavBarIsVisible="false"
+    Shell.NavBarIsVisible="False"
     xmlns:controls="clr-namespace:Maui.FreakyControls;assembly=Maui.FreakyControls"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
