@@ -17,6 +17,14 @@ Maui.FreakyUXKit is a lightweight and customisable UX toolkit for .NET MAUI
 | iOS     |      iOS 15.0 +       |
 | Android | API 26+ (Marshmallow) |
 
+## Previews:
+
+### Note: The GIFs here don't represent the actual performance. Please feel free to clone the repository and check the performance yourself.
+
+| iOS                                                                                                                                         | Android                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/user-attachments/assets/c060fc82-ecef-48af-84b4-e07a963e65d5" width="250" height="550"/> | <img src="https://github.com/user-attachments/assets/c060fc82-ecef-48af-84b4-e07a963e65d5" width="250" height="550"/>  |
+
 ## Documentation
 
 For more details and API documentation, check our [Wiki](https://github.com/FreakyAli/Maui.FreakyUXKit/wiki)
@@ -35,11 +43,11 @@ The license for this project can be found [here](https://github.com/FreakyAli/Ma
 
 Add our [NuGet](https://www.nuget.org/packages/FreakyUXKit) package or
 
-Run the following command to add our Nuget to your .Net MAUI app:
+Run the following command to add our NuGet to your .NET MAUI app:
 
       Install-Package FreakyUXKit -Version xx.xx.xx
 
-Add the following using statement and Initialization in your MauiProgram:
+Add the following using statement and initialization in your MauiProgram:
 
 ```c#
 using MAUI.FreakyUXKit;
