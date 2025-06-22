@@ -23,7 +23,8 @@ Maui.FreakyUXKit is a lightweight and customisable UX toolkit for .NET MAUI
 
 | iOS                                                                                                                                         | Android                                                                                                                                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="https://github.com/user-attachments/assets/c060fc82-ecef-48af-84b4-e07a963e65d5" width="250" height="550"/> | <img src="https://github.com/user-attachments/assets/c060fc82-ecef-48af-84b4-e07a963e65d5" width="250" height="550"/>  |
+| <img src="https://github.com/user-attachments/assets/c060fc82-ecef-48af-84b4-e07a963e65d5" width="250" height="550"/> | <img src="https://github.com/user-attachments/assets/6eabce77-dcf3-46fc-b404-391a4778a6b5" width="250" height="550"/>  |
+| <img src="https://github.com/user-attachments/assets/402b57d1-a264-4aff-a91b-d0b9e21e81e6" width="250" height="550"/> | <img src="https://github.com/user-attachments/assets/e076fca2-2b31-4e18-a568-ec62ea2d42ee" width="250" height="550"/>  |
 
 ## Documentation
 
