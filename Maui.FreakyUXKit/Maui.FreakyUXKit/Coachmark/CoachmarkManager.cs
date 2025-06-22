@@ -1,10 +1,20 @@
+using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Extensions;
+
 namespace Maui.FreakyUXKit;
 
 internal class CoachmarkManager
 {
     internal static async Task PresentCoachmarksAsync(IList<View> coachMarkViews)
     {
-        var tutorialPage = new FreakyPopupPage(coachMarkViews.OrderBy(FreakyCoachmark.GetDisplayOrder));
-        await Constants.MainPage?.Navigation.PushModalAsync(tutorialPage, false);
+        var oderedCoachMarkViews = coachMarkViews.OrderBy(FreakyCoachmark.GetDisplayOrder).ToList();
+        var tutorialPage = new FreakyPopupPage(oderedCoachMarkViews);
+        var popupOptions = new PopupOptions
+        {
+            PageOverlayColor = Colors.Transparent,
+            CanBeDismissedByTappingOutsideOfPopup = false,
+            Shadow = null,
+        };
+        await Constants.MainPage.ShowPopupAsync(tutorialPage, popupOptions);
     }
 }

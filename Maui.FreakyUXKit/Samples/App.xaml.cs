@@ -2,13 +2,17 @@
 
 public partial class App : Application
 {
+	#nullable enable
+	internal static Page? CurrentPage => Current?.Windows?.FirstOrDefault()?.Page;
+	#nullable disable
+
 	public App()
 	{
 		InitializeComponent();
 	}
-#nullable enable
-	protected override Window CreateWindow(IActivationState? _)
-	{
-		return new Window(new MainPage());
-	}
+
+    protected override Window CreateWindow(IActivationState activationState)
+    {
+		return new Window(new AppShell());
+    }
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Samples.FreakyBaseContentPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:constants="clr-namespace:Samples"
+    NavigationPage.HasNavigationBar="False"
+    Shell.NavBarIsVisible="False"
+    xmlns:controls="clr-namespace:Maui.FreakyControls;assembly=Maui.FreakyControls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+    xmlns:local="clr-namespace:Samples"
+    x:Name="this"
+    BackgroundColor="{StaticResource Primary}">
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior StatusBarColor="{StaticResource Primary}" StatusBarStyle="LightContent" />
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <ControlTemplate x:Key="HeaderControlTemplate" x:DataType="local:FreakyBaseContentPage">
+                <AbsoluteLayout>
+                    <Grid
+                        AbsoluteLayout.LayoutBounds="0,0,1,1"
+                        AbsoluteLayout.LayoutFlags="All"
+                        BackgroundColor="{TemplateBinding Parent.NavBarBackgroundColor}"
+                        ColumnSpacing="0"
+                        RowSpacing="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="25*" />
+                            <ColumnDefinition Width="50*" />
+                            <ColumnDefinition Width="25*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="7*" />
+                            <RowDefinition Height="93*" />
+                        </Grid.RowDefinitions>
+                        <ContentView
+                            touchEffects:TouchEffect.Color="{StaticResource Ripple}"
+                            touchEffects:Commands.Tap="{TemplateBinding Parent.BackButtonCommand}"
+                            Grid.Row="0"
+                            Margin="15,0,0,0"
+                            Grid.Column="0">
+                            <Border
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="30"
+                            InputTransparent="True"
+                            HorizontalOptions="Start"
+                            IsVisible="{TemplateBinding Parent.IsBackButtonVisible}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center"
+                            WidthRequest="30">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="5" />
+                                </Border.StrokeShape>
+                                <controls:FreakySvgImageView
+                                ImageColor="White"
+                                InputTransparent="True"
+                                ResourceId="{x:Static constants:Constants.BackButton}"
+                                SvgAssembly="{x:Static constants:Constants.SvgAssembly}"
+                                SvgMode="AspectFit" />
+                            </Border>
+                        </ContentView>
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="0,0,0,0"
+                            FontSize="Medium"
+                            HorizontalOptions="Center"
+                            Style="{DynamicResource HeaderLabelStyle}"
+                            Text="{TemplateBinding Parent.HeaderText}"
+                            TextColor="{TemplateBinding Parent.HeaderTextColor}"
+                            VerticalOptions="Center" />
+                        <ContentView
+                            touchEffects:TouchEffect.Color="{StaticResource Ripple}"
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            >
+                            <Border
+                            Margin="0,0,15,0"
+                            BackgroundColor="{StaticResource Tertiary}"
+                            HeightRequest="30"
+                            HorizontalOptions="End"
+                            IsVisible="{TemplateBinding Parent.IsContextVisible}"
+                            StrokeThickness="0"
+                            VerticalOptions="Center"
+                            WidthRequest="30">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="5" />
+                                </Border.StrokeShape>
+                                <controls:FreakySvgImageView
+                                ImageColor="White"
+                                ResourceId="{x:Static constants:Constants.MeatballMenu}"
+                                SvgAssembly="{x:Static constants:Constants.SvgAssembly}"
+                                SvgMode="AspectFit" />
+                            </Border>
+                        </ContentView>
+                        <ContentPresenter
+                            Grid.Row="1"
+                            Grid.ColumnSpan="3"
+                            IsClippedToBounds="True"
+                            BackgroundColor="{StaticResource White}"
+                            VerticalOptions="Fill" />
+                    </Grid>
+                </AbsoluteLayout>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+</ContentPage>

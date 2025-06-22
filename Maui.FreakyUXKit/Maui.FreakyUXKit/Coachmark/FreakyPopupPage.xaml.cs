@@ -1,15 +1,17 @@
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Maui.Views;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
 namespace Maui.FreakyUXKit;
 
-public partial class FreakyPopupPage : ContentPage
+public partial class FreakyPopupPage : Popup
 {
     private readonly IEnumerable<View> _views;
     private int _currentIndex;
     private SKRect _currentBounds;
     private readonly List<View> _overlays = new();
-    
+
     // Animation system properties
     private System.Timers.Timer _animationTimer;
     private float _animationProgress = 0f;
@@ -37,29 +39,30 @@ public partial class FreakyPopupPage : ContentPage
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
     #endregion
 
-    public FreakyPopupPage(IEnumerable<View> coachMarkViews)
+    public FreakyPopupPage(List<View> coachMarkViews)
     {
+        InitializeComponent();
         _currentIndex = 0;
         _views = coachMarkViews;
-        InitializeComponent();
+        this.Loaded += OnLoaded;
     }
 
-    private async void OnBackgroundTapped(object sender, EventArgs e)
+    private async void OnLoaded(object sender, EventArgs e)
     {
-        await NextCoachMark().ConfigureAwait(false);
-    }
-
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
         await Task.Delay(100);
         ShowCurrentCoachMark();
     }
 
-    protected override void OnDisappearing()
+    private async void OnBackgroundTapped(object sender, EventArgs e)
     {
-        base.OnDisappearing();
+        await NextCoachMark();
+    }
+
+    public override Task CloseAsync(CancellationToken token = default)
+    {
+        this.Loaded -= OnLoaded;
         ClearOverlayViews();
+        return base.CloseAsync(token);
     }
 
     private async Task NextCoachMark()
@@ -67,65 +70,12 @@ public partial class FreakyPopupPage : ContentPage
         _currentIndex++;
         if (_currentIndex >= _views.Count())
         {
-            await Constants.MainPage?.Navigation.PopModalAsync(false);
+            await Constants.MainPage?.ClosePopupAsync();
         }
         else
         {
             ShowCurrentCoachMark();
         }
-    }
-
-    private void ShowCurrentCoachMark()
-    {
-        ClearOverlayViews();
-        ResetAnimationState();
-
-        if (CurrentTargetView.Handler == null || OverlayView == null)
-            return;
-
-        var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
-        
-        // Apply highlight padding to expand the highlight area
-        var paddedBounds = new Rect(
-            bounds.X - HighlightPadding,
-            bounds.Y - HighlightPadding,
-            bounds.Width + (HighlightPadding * 2),
-            bounds.Height + (HighlightPadding * 2)
-        );
-        
-        _currentBounds = new SKRect(
-            (float)paddedBounds.X,
-            (float)paddedBounds.Y,
-            (float)(paddedBounds.X + paddedBounds.Width),
-            (float)(paddedBounds.Y + paddedBounds.Height)
-        );
-
-        // Calculate overlay size (use original bounds for positioning calculations)
-        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
-        var overlaySize = MeasureOverlayView();
-        var containerBounds = new SKRect(0, 0, (float)container.Width, (float)container.Height);
-        
-        // Determine final position using original target bounds (not padded)
-        var originalSkRect = new SKRect(
-            (float)originalBounds.X,
-            (float)originalBounds.Y,
-            (float)(originalBounds.X + originalBounds.Width),
-            (float)(originalBounds.Y + originalBounds.Height)
-        );
-        var finalPosition = DetermineOverlayPosition(originalSkRect, containerBounds, overlaySize);
-        
-        // Calculate and apply margin (use original bounds for overlay positioning)
-        var margin = finalPosition.CalculateOverlayMargin(originalSkRect, overlaySize, containerBounds, OverlayMargin);
-        OverlayView.Margin = margin;
-        
-        // Set width constraints based on position (use original bounds)
-        SetOverlayConstraints(finalPosition, overlaySize, originalSkRect);
-        
-        container.Children.Add(OverlayView);
-        _overlays.Add(OverlayView);
-
-        StartAnimation();
-        canvasView.InvalidateSurface();
     }
 
     private CoachmarkPosition DetermineOverlayPosition(SKRect targetBounds, SKRect containerBounds, Size overlaySize)
@@ -136,7 +86,7 @@ public partial class FreakyPopupPage : ContentPage
             if (HasEnoughSpace(PreferredPosition, targetBounds, containerBounds, overlaySize))
                 return PreferredPosition;
         }
-        
+
         // Fall back to automatic calculation
         return targetBounds.CalculateOptimalPosition(containerBounds, overlaySize, OverlayMargin);
     }
@@ -144,56 +94,15 @@ public partial class FreakyPopupPage : ContentPage
     private bool HasEnoughSpace(CoachmarkPosition position, SKRect targetBounds, SKRect containerBounds, Size overlaySize)
     {
         var margin = OverlayMargin;
-        
+
         return position switch
         {
             CoachmarkPosition.Top => targetBounds.Top >= overlaySize.Height + margin,
             CoachmarkPosition.Bottom => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin,
             CoachmarkPosition.Left => targetBounds.Left >= overlaySize.Width + margin,
             CoachmarkPosition.Right => containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
-            CoachmarkPosition.TopLeft => targetBounds.Top >= overlaySize.Height + margin && 
-                                       targetBounds.Left >= overlaySize.Width + margin,
-            CoachmarkPosition.TopRight => targetBounds.Top >= overlaySize.Height + margin && 
-                                        containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
-            CoachmarkPosition.BottomLeft => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin && 
-                                          targetBounds.Left >= overlaySize.Width + margin,
-            CoachmarkPosition.BottomRight => containerBounds.Height - targetBounds.Bottom >= overlaySize.Height + margin && 
-                                           containerBounds.Width - targetBounds.Right >= overlaySize.Width + margin,
             _ => true
         };
-    }
-
-    private Size MeasureOverlayView()
-    {
-        if (OverlayView == null) return new Size(200, 100);
-        
-        // Measure the overlay view to get its desired size
-        var widthConstraint = container.Width * 0.8; // Max 80% of container width
-        var heightConstraint = container.Height * 0.6; // Max 60% of container height
-        
-        var size = OverlayView.Measure(widthConstraint, heightConstraint);
-        return new Size(
-            Math.Min(size.Request.Width, widthConstraint),
-            Math.Min(size.Request.Height, heightConstraint)
-        );
-    }
-
-    private void SetOverlayConstraints(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
-    {
-        switch (position)
-        {
-            case CoachmarkPosition.Left:
-            case CoachmarkPosition.Right:
-            case CoachmarkPosition.TopLeft:
-            case CoachmarkPosition.TopRight:
-            case CoachmarkPosition.BottomLeft:
-            case CoachmarkPosition.BottomRight:
-                OverlayView.MaximumWidthRequest = overlaySize.Width;
-                break;
-            default:
-                OverlayView.MaximumWidthRequest = originalBounds.Width;
-                break;
-        }
     }
 
     private void ResetAnimationState()
@@ -296,13 +205,21 @@ public partial class FreakyPopupPage : ContentPage
 
     private void RenderFocusAnimation(SKCanvas canvas, SKRect rect, float highX, float highY, SKRect highlightRect)
     {
-        float width = highlightRect.Width * _pulseScale;
-        float height = highlightRect.Height * _pulseScale;
+        float width = highlightRect.Width;
+        float height = highlightRect.Height;
 
         if (_animationProgress <= FocusRipplePhaseEnd)
         {
-            // Phase 1: Focus ripple convergence
-            canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, FocusAnimationColor);
+            // Phase 1: Always draw basic background and highlight first
+            canvas.DrawBasicBackgroundOverlay(rect);
+            canvas.DrawHighlightCutOut(CurrentShape, highX, highY, width, height, CornerRadius);
+            canvas.DrawHighlightStroke(CurrentShape, highX, highY, width, height);
+
+            // Then add ripple effect on top (only if progress > 0)
+            if (_animationProgress > 0)
+            {
+                canvas.DrawFocusRippleEffect(rect, CurrentShape, highX, highY, width, height, CornerRadius, _animationProgress, FocusAnimationColor);
+            }
         }
         else if (_animationProgress <= FocusTransitionPhaseEnd)
         {
@@ -311,11 +228,13 @@ public partial class FreakyPopupPage : ContentPage
         }
         else
         {
-            // Phase 3: Pulsing highlight on focus background
-            DrawFocusPulsingHighlight(canvas, rect, highX, highY, width, height);
+            // Phase 3: Pulsing highlight on focus background - use pulse scale here
+            float pulsedWidth = highlightRect.Width * _pulseScale;
+            float pulsedHeight = highlightRect.Height * _pulseScale;
+            DrawFocusPulsingHighlight(canvas, rect, highX, highY, pulsedWidth, pulsedHeight);
         }
     }
-    
+
     private void RenderRippleAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
     {
         float rippleRadius = bounds.Width * (_animationProgress * 1.5f);
@@ -336,7 +255,7 @@ public partial class FreakyPopupPage : ContentPage
     {
         canvas.DrawDarkOverlayWithSpotlight(x, y, bounds.Width, bounds.Height);
     }
-    
+
     private SKPoint GetClosestPointOnRect(SKRect rect, SKPoint point)
     {
         // Clamp the point coordinates inside the rect
@@ -470,7 +389,7 @@ public partial class FreakyPopupPage : ContentPage
         DrawShapeStroke(canvas, CurrentShape, highX, highY, width, height, strokePaint);
     }
 
-    private void DrawShapeStroke(SKCanvas canvas, HighlightShape shape, float centerX, float centerY, 
+    private void DrawShapeStroke(SKCanvas canvas, HighlightShape shape, float centerX, float centerY,
         float width, float height, SKPaint paint)
     {
         switch (shape)
@@ -480,15 +399,15 @@ public partial class FreakyPopupPage : ContentPage
                 canvas.DrawCircle(centerX, centerY, radius, paint);
                 break;
             case HighlightShape.Ellipse:
-                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), paint);
                 break;
             case HighlightShape.Rectangle:
-                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), paint);
                 break;
             default: // RoundRectangle
-                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2, 
+                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2,
                     centerX + width / 2, centerY + height / 2), CornerRadius), paint);
                 break;
         }
@@ -524,7 +443,7 @@ public partial class FreakyPopupPage : ContentPage
         {
             // Pulse phase - update pulse scale
             UpdateFocusPulseScale();
-            
+
             // Keep animation progress above pulse threshold
             if (_animationProgress < 1f)
                 _animationProgress += 0.001f;
@@ -566,9 +485,421 @@ public partial class FreakyPopupPage : ContentPage
         _animationTimer?.Stop();
         _animationTimer?.Dispose();
         _animationTimer = null;
-        
+
         ResetAnimationState();
     }
     #endregion
-    
+
+    private Size MeasureOverlayView()
+    {
+        if (OverlayView == null) return new Size(200, 100);
+
+        // Temporarily add to container for measurement if not already present
+        bool wasTemporarilyAdded = false;
+        if (OverlayView.Parent == null)
+        {
+            container.Children.Add(OverlayView);
+            wasTemporarilyAdded = true;
+        }
+
+        // Get container constraints
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+
+        // Calculate maximum available space (leaving margins for positioning)
+        var maxAvailableWidth = containerWidth * 0.9; // 90% of container width
+        var maxAvailableHeight = containerHeight * 0.7; // 70% of container height
+
+        // First measurement: Get natural size with generous constraints
+        var naturalSize = OverlayView.Measure(maxAvailableWidth, maxAvailableHeight);
+
+        // Calculate the target bounds for positioning context
+        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
+        var targetRect = new SKRect(
+            (float)originalBounds.X,
+            (float)originalBounds.Y,
+            (float)(originalBounds.X + originalBounds.Width),
+            (float)(originalBounds.Y + originalBounds.Height)
+        );
+
+        // Determine optimal position to calculate space constraints
+        var containerRect = new SKRect(0, 0, (float)containerWidth, (float)containerHeight);
+        var preliminaryPosition = DetermineOverlayPosition(targetRect, containerRect, naturalSize);
+
+        // Calculate position-specific width constraints
+        var maxWidthForPosition = CalculateMaxWidthForPosition(preliminaryPosition, targetRect, containerRect);
+
+        // If natural width exceeds position-specific constraint, re-measure with tighter width
+        if (naturalSize.Width > maxWidthForPosition)
+        {
+            var constrainedSize = OverlayView.Measure(maxWidthForPosition, maxAvailableHeight);
+            var finalConstrainedSize = new Size(
+                Math.Min(constrainedSize.Width, maxWidthForPosition),
+                Math.Min(constrainedSize.Height, maxAvailableHeight)
+            );
+
+            // Remove from container if we added it temporarily for measurement
+            if (wasTemporarilyAdded)
+            {
+                container.Children.Remove(OverlayView);
+            }
+
+            return finalConstrainedSize;
+        }
+
+        // Return natural size if it fits within all constraints
+        var finalSize = new Size(
+            Math.Min(naturalSize.Width, maxAvailableWidth),
+            Math.Min(naturalSize.Height, maxAvailableHeight)
+        );
+
+        // Remove from container if we added it temporarily for measurement
+        if (wasTemporarilyAdded)
+        {
+            container.Children.Remove(OverlayView);
+        }
+
+        return finalSize;
+    }
+
+    private double CalculateMaxWidthForPosition(CoachmarkPosition position, SKRect targetBounds, SKRect containerBounds)
+    {
+        var margin = OverlayMargin;
+
+        return position switch
+        {
+            CoachmarkPosition.Left => targetBounds.Left - margin,
+            CoachmarkPosition.Right => containerBounds.Width - targetBounds.Right - margin,
+            CoachmarkPosition.Top => containerBounds.Width * 0.8, // 80% for top/bottom positions
+            CoachmarkPosition.Bottom => containerBounds.Width * 0.8,
+            _ => containerBounds.Width * 0.9 // Default to 90% of container width
+        };
+    }
+
+    private void SetOverlayConstraints(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
+    {
+        // Clear any previous constraints
+        OverlayView.MaximumWidthRequest = -1;
+        OverlayView.MaximumHeightRequest = -1;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // Set appropriate width constraints based on position
+        switch (position)
+        {
+            case CoachmarkPosition.Left:
+            case CoachmarkPosition.Right:
+                // Side positions: Use calculated width and allow height to adjust
+                OverlayView.MaximumWidthRequest = overlaySize.Width;
+                OverlayView.WidthRequest = overlaySize.Width;
+                break;
+
+            case CoachmarkPosition.Top:
+            case CoachmarkPosition.Bottom:
+                // Top/Bottom positions: Allow wider but constrain to container
+                var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+                var maxWidth = Math.Min(overlaySize.Width, containerWidth * 0.8);
+                OverlayView.MaximumWidthRequest = maxWidth;
+                OverlayView.WidthRequest = maxWidth;
+                break;
+
+            default:
+                // Auto position: Use calculated size
+                OverlayView.MaximumWidthRequest = overlaySize.Width;
+                OverlayView.WidthRequest = overlaySize.Width;
+                break;
+        }
+
+        // Set height constraints to prevent overflow
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+        var maxHeight = Math.Min(overlaySize.Height, containerHeight * 0.7);
+        OverlayView.MaximumHeightRequest = maxHeight;
+        OverlayView.HeightRequest = maxHeight;
+    }
+
+    private Thickness CalculateOverlayMargin(CoachmarkPosition position, SKRect targetBounds, Size overlaySize, SKRect containerBounds, float margin)
+    {
+        var targetCenterX = targetBounds.MidX;
+        var targetCenterY = targetBounds.MidY;
+        var overlayHalfWidth = (float)(overlaySize.Width / 2);
+        var overlayHalfHeight = (float)(overlaySize.Height / 2);
+
+        return position switch
+        {
+            CoachmarkPosition.Top => new Thickness(
+                targetCenterX - overlayHalfWidth, // Center horizontally on target
+                targetBounds.Top - overlaySize.Height - margin, // Above target with margin
+                0, 0),
+
+            CoachmarkPosition.Bottom => new Thickness(
+                targetCenterX - overlayHalfWidth, // Center horizontally on target
+                targetBounds.Bottom + margin, // Below target with margin
+                0, 0),
+
+            CoachmarkPosition.Left => new Thickness(
+                targetBounds.Left - overlaySize.Width - margin, // Left of target with margin
+                targetCenterY - overlayHalfHeight, // Center vertically on target
+                0, 0),
+
+            CoachmarkPosition.Right => new Thickness(
+                targetBounds.Right + margin, // Right of target with margin
+                targetCenterY - overlayHalfHeight, // Center vertically on target
+                0, 0),
+
+            // For Auto, use the extension method calculation
+            _ => position.CalculateOverlayMargin(targetBounds, overlaySize, containerBounds, margin)
+        };
+    }
+
+    // Add this method to ensure overlay stays within screen bounds
+    private Thickness EnsureOverlayWithinBounds(Thickness calculatedMargin, Size overlaySize, SKRect containerBounds)
+    {
+        var left = calculatedMargin.Left;
+        var top = calculatedMargin.Top;
+        var overlayWidth = overlaySize.Width;
+        var overlayHeight = overlaySize.Height;
+
+        // Ensure overlay doesn't go beyond left edge
+        if (left < 0)
+        {
+            left = 0;
+        }
+
+        // Ensure overlay doesn't go beyond top edge
+        if (top < 0)
+        {
+            top = 0;
+        }
+
+        // Ensure overlay doesn't go beyond right edge
+        if (left + overlayWidth > containerBounds.Width)
+        {
+            left = containerBounds.Width - overlayWidth;
+            // If still negative, it means overlay is too wide for screen
+            if (left < 0)
+            {
+                left = 0;
+                // In this case, the overlay width constraint should handle the overflow
+            }
+        }
+
+        // Ensure overlay doesn't go beyond bottom edge
+        if (top + overlayHeight > containerBounds.Height)
+        {
+            top = containerBounds.Height - overlayHeight;
+            // If still negative, it means overlay is too tall for screen
+            if (top < 0)
+            {
+                top = 0;
+                // In this case, the overlay height constraint should handle the overflow
+            }
+        }
+
+        return new Thickness(left, top, 0, 0);
+    }
+
+    // Enhanced CalculateOverlayMargin method with boundary checking
+    private Thickness CalculateOverlayMarginWithBounds(CoachmarkPosition position, SKRect targetBounds, Size overlaySize, SKRect containerBounds, float margin)
+    {
+        var targetCenterX = targetBounds.MidX;
+        var targetCenterY = targetBounds.MidY;
+        var overlayHalfWidth = (float)(overlaySize.Width / 2);
+        var overlayHalfHeight = (float)(overlaySize.Height / 2);
+
+        Thickness calculatedMargin = position switch
+        {
+            CoachmarkPosition.Top => new Thickness(
+                targetCenterX - overlayHalfWidth,
+                targetBounds.Top - overlaySize.Height - margin,
+                0, 0),
+
+            CoachmarkPosition.Bottom => new Thickness(
+                targetCenterX - overlayHalfWidth,
+                targetBounds.Bottom + margin,
+                0, 0),
+
+            CoachmarkPosition.Left => new Thickness(
+                targetBounds.Left - overlaySize.Width - margin,
+                targetCenterY - overlayHalfHeight,
+                0, 0),
+
+            CoachmarkPosition.Right => new Thickness(
+                targetBounds.Right + margin,
+                targetCenterY - overlayHalfHeight,
+                0, 0),
+
+            _ => position.CalculateOverlayMargin(targetBounds, overlaySize, containerBounds, margin)
+        };
+
+        // Ensure the calculated margin keeps overlay within bounds
+        return EnsureOverlayWithinBounds(calculatedMargin, overlaySize, containerBounds);
+    }
+
+    // Enhanced MeasureOverlayView with strict screen constraints
+    private Size MeasureOverlayViewWithScreenConstraints()
+    {
+        if (OverlayView == null) return new Size(200, 100);
+
+        // Get actual container/screen dimensions
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+
+        // Add some padding to prevent overlay from touching screen edges
+        var screenPadding = 10;
+        var maxScreenWidth = containerWidth - (screenPadding * 2);
+        var maxScreenHeight = containerHeight - (screenPadding * 2);
+
+        // Temporarily add to container for measurement if not already present
+        bool wasTemporarilyAdded = false;
+        if (OverlayView.Parent == null)
+        {
+            container.Children.Add(OverlayView);
+            wasTemporarilyAdded = true;
+        }
+
+        // Calculate target-aware constraints
+        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
+        var targetRect = new SKRect(
+            (float)originalBounds.X,
+            (float)originalBounds.Y,
+            (float)(originalBounds.X + originalBounds.Width),
+            (float)(originalBounds.Y + originalBounds.Height)
+        );
+
+        var containerRect = new SKRect(0, 0, (float)containerWidth, (float)containerHeight);
+
+        // First measurement with generous constraints
+        var naturalSize = OverlayView.Measure(maxScreenWidth, maxScreenHeight);
+
+        // Determine position to calculate space-specific constraints
+        var preliminaryPosition = DetermineOverlayPosition(targetRect, containerRect, naturalSize);
+        var maxWidthForPosition = CalculateMaxWidthForPosition(preliminaryPosition, targetRect, containerRect);
+
+        // Apply screen width constraint
+        var finalMaxWidth = Math.Min(maxWidthForPosition, maxScreenWidth);
+
+        // Re-measure if needed
+        Size finalSize;
+        if (naturalSize.Width > finalMaxWidth)
+        {
+            var constrainedSize = OverlayView.Measure(finalMaxWidth, maxScreenHeight);
+            finalSize = new Size(
+                Math.Min(constrainedSize.Width, finalMaxWidth),
+                Math.Min(constrainedSize.Height, maxScreenHeight)
+            );
+        }
+        else
+        {
+            finalSize = new Size(
+                Math.Min(naturalSize.Width, maxScreenWidth),
+                Math.Min(naturalSize.Height, maxScreenHeight)
+            );
+        }
+
+        // Remove from container if we added it temporarily
+        if (wasTemporarilyAdded)
+        {
+            container.Children.Remove(OverlayView);
+        }
+
+        return finalSize;
+    }
+
+    // Enhanced SetOverlayConstraints with screen bounds
+    private void SetOverlayConstraintsWithScreenBounds(CoachmarkPosition position, Size overlaySize, SKRect originalBounds)
+    {
+        // Get screen dimensions
+        var containerWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var containerHeight = container.Height > 0 ? container.Height : Constants.Height;
+        var screenPadding = 10;
+
+        // Clear any previous constraints
+        OverlayView.MaximumWidthRequest = -1;
+        OverlayView.MaximumHeightRequest = -1;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // Calculate absolute maximum dimensions (screen bounds minus padding)
+        var absoluteMaxWidth = containerWidth - (screenPadding * 2);
+        var absoluteMaxHeight = containerHeight - (screenPadding * 2);
+
+        // Set width constraints based on position, but never exceed screen bounds
+        double maxWidth = position switch
+        {
+            CoachmarkPosition.Left or CoachmarkPosition.Right =>
+                Math.Min(overlaySize.Width, absoluteMaxWidth),
+            CoachmarkPosition.Top or CoachmarkPosition.Bottom =>
+                Math.Min(Math.Min(overlaySize.Width, containerWidth * 0.8), absoluteMaxWidth),
+            _ => Math.Min(overlaySize.Width, absoluteMaxWidth)
+        };
+
+        // Set height constraints - never exceed screen bounds
+        var maxHeight = Math.Min(overlaySize.Height, absoluteMaxHeight);
+
+        // Apply constraints
+        OverlayView.MaximumWidthRequest = maxWidth;
+        OverlayView.WidthRequest = maxWidth;
+        OverlayView.MaximumHeightRequest = maxHeight;
+        OverlayView.HeightRequest = maxHeight;
+
+        // Ensure the view respects these bounds
+        OverlayView.HorizontalOptions = LayoutOptions.Fill;
+        OverlayView.VerticalOptions = LayoutOptions.Fill;
+    }
+
+    private void ShowCurrentCoachMark()
+    {
+        ClearOverlayViews();
+        ResetAnimationState();
+
+        if (CurrentTargetView.Handler == null || OverlayView == null)
+            return;
+
+        var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
+
+        // Apply highlight padding to expand the highlight area
+        var paddedBounds = new Rect(
+            bounds.X - HighlightPadding,
+            bounds.Y - HighlightPadding,
+            bounds.Width + (HighlightPadding * 2),
+            bounds.Height + (HighlightPadding * 2)
+        );
+
+        _currentBounds = new SKRect(
+            (float)paddedBounds.X,
+            (float)paddedBounds.Y,
+            (float)(paddedBounds.X + paddedBounds.Width),
+            (float)(paddedBounds.Y + paddedBounds.Height)
+        );
+
+        // Calculate overlay size with screen constraints
+        var overlaySize = MeasureOverlayViewWithScreenConstraints();
+
+        // Use original bounds for positioning calculations
+        var originalBounds = CurrentTargetView.GetRelativeBoundsTo(container);
+        var containerBounds = new SKRect(0, 0, (float)container.Width, (float)container.Height);
+        var originalSkRect = new SKRect(
+            (float)originalBounds.X,
+            (float)originalBounds.Y,
+            (float)(originalBounds.X + originalBounds.Width),
+            (float)(originalBounds.Y + originalBounds.Height)
+        );
+
+        // Determine final position
+        var finalPosition = DetermineOverlayPosition(originalSkRect, containerBounds, overlaySize);
+
+        // Set constraints with screen bounds checking
+        SetOverlayConstraintsWithScreenBounds(finalPosition, overlaySize, originalSkRect);
+
+        // Calculate margin with boundary checking
+        var margin = CalculateOverlayMarginWithBounds(finalPosition, originalSkRect, overlaySize, containerBounds, OverlayMargin);
+        OverlayView.Margin = margin;
+
+        // Add to container after all constraints are set
+        container.Children.Add(OverlayView);
+        _overlays.Add(OverlayView);
+
+        StartAnimation();
+        canvasView.InvalidateSurface();
+    }
 }
