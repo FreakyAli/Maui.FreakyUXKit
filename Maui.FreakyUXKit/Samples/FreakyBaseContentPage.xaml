@@ -9,6 +9,7 @@
     xmlns:controls="clr-namespace:Maui.FreakyControls;assembly=Maui.FreakyControls"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:touchEffects="clr-namespace:Maui.FreakyEffects.TouchEffects;assembly=Maui.FreakyEffects"
+    xmlns:local="clr-namespace:Samples"
     x:Name="this"
     BackgroundColor="{StaticResource Primary}">
     <ContentPage.Behaviors>
@@ -16,7 +17,7 @@
     </ContentPage.Behaviors>
     <ContentPage.Resources>
         <ResourceDictionary>
-            <ControlTemplate x:Key="HeaderControlTemplate">
+            <ControlTemplate x:Key="HeaderControlTemplate" x:DataType="local:FreakyBaseContentPage">
                 <AbsoluteLayout>
                     <Grid
                         AbsoluteLayout.LayoutBounds="0,0,1,1"

@@ -58,15 +58,44 @@
                             ColumnSpacing="30">
                             <Button
                                 Grid.Column="0"
+                                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                fc:FreakyCoachmark.DisplayOrder="3"
+                                fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                                fc:FreakyCoachmark.OwningPage="{Reference page}"
+                                fc:FreakyCoachmark.PreferredPosition="Right"
                                 ImageSource="briefcase.png"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Text="Hire Me!" />
+                                Text="Hire Me!">
+                                <fc:FreakyCoachmark.OverlayView>
+                                    <VerticalStackLayout>
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="Large"
+                                            Text="Or just a regular control"
+                                            TextColor="White" />
+                                    </VerticalStackLayout>
+                                </fc:FreakyCoachmark.OverlayView>
+                            </Button>
                             <Button
                                 Grid.Column="1"
+                                fc:FreakyCoachmark.CoachmarkAnimation="Focus"
+                                fc:FreakyCoachmark.DisplayOrder="4"
+                                fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
+                                fc:FreakyCoachmark.OwningPage="{Reference page}"
+                                fc:FreakyCoachmark.PreferredPosition="Right"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Text="Follow" />
+                                Text="Follow">
+                                <fc:FreakyCoachmark.OverlayView>
+                                    <VerticalStackLayout>
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="Large"
+                                            Text="Follow me for more!"
+                                            TextColor="White" />
+                                    </VerticalStackLayout>
+                                </fc:FreakyCoachmark.OverlayView>
+                            </Button>
                         </Grid>
-
                         <Grid
                             Margin="50,10,50,0"
                             ColumnDefinitions="*,*,*"
@@ -262,20 +291,30 @@
                                 <Border
                                     Margin="20,0,20,20"
                                     fc:FreakyCoachmark.CoachmarkAnimation="Focus"
-                                    fc:FreakyCoachmark.DisplayOrder="2"
+                                    fc:FreakyCoachmark.DisplayOrder="1"
                                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                                     fc:FreakyCoachmark.OverlayMargin="50"
                                     fc:FreakyCoachmark.OwningPage="{Reference page}"
-                                    fc:FreakyCoachmark.PreferredPosition="Left"
+                                    fc:FreakyCoachmark.PreferredPosition="Top"
                                     BackgroundColor="{StaticResource Tertiary}"
                                     Stroke="{StaticResource Tertiary}"
                                     StrokeShape="RoundRectangle 20,20,20,20">
                                     <fc:FreakyCoachmark.OverlayView>
-                                        <VerticalStackLayout BackgroundColor="Green">
+                                        <VerticalStackLayout>
                                             <Label
                                                 FontAttributes="Bold"
                                                 FontSize="Large"
                                                 Text="Describe your elements!"
+                                                TextColor="White" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="Large"
+                                                Text="This could be going into details"
+                                                TextColor="White" />
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="Large"
+                                                Text="Do whatever you need I guess"
                                                 TextColor="White" />
                                         </VerticalStackLayout>
                                     </fc:FreakyCoachmark.OverlayView>
@@ -324,28 +363,18 @@
                 </Grid>
                 <ContentView
                     fc:FreakyCoachmark.CoachmarkAnimation="Focus"
-                    fc:FreakyCoachmark.DisplayOrder="1"
+                    fc:FreakyCoachmark.DisplayOrder="2"
                     fc:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fc:FreakyCoachmark.OwningPage="{Reference page}"
                     fc:FreakyCoachmark.PreferredPosition="Right"
                     AbsoluteLayout.LayoutBounds=".5,0.03,100,100"
                     AbsoluteLayout.LayoutFlags="PositionProportional">
                     <fc:FreakyCoachmark.OverlayView>
-                        <VerticalStackLayout BackgroundColor="Red">
+                        <VerticalStackLayout>
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="Large"
-                                Text="Describe your elements!"
-                                TextColor="White" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="Large"
-                                Text="This could be going into details"
-                                TextColor="White" />
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="Large"
-                                Text="Do whatever you need I guess"
+                                Text="The elements can be a View with a complex structure!"
                                 TextColor="White" />
                         </VerticalStackLayout>
                     </fc:FreakyCoachmark.OverlayView>
