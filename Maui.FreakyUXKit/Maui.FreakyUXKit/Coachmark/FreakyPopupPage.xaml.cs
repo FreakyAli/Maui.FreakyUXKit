@@ -39,7 +39,7 @@ public partial class FreakyPopupPage : Popup
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
     #endregion
 
-    public FreakyPopupPage(IEnumerable<View> coachMarkViews)
+    public FreakyPopupPage(List<View> coachMarkViews)
     {
         InitializeComponent();
         _currentIndex = 0;
@@ -55,7 +55,7 @@ public partial class FreakyPopupPage : Popup
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
     {
-        await NextCoachMark().ConfigureAwait(false);
+        await NextCoachMark();
     }
 
     public override Task CloseAsync(CancellationToken token = default)

@@ -7,7 +7,8 @@ internal class CoachmarkManager
 {
     internal static async Task PresentCoachmarksAsync(IList<View> coachMarkViews)
     {
-        var tutorialPage = new FreakyPopupPage(coachMarkViews.OrderBy(FreakyCoachmark.GetDisplayOrder));
+        var oderedCoachMarkViews = coachMarkViews.OrderBy(FreakyCoachmark.GetDisplayOrder).ToList();
+        var tutorialPage = new FreakyPopupPage(oderedCoachMarkViews);
         var popupOptions = new PopupOptions
         {
             PageOverlayColor = Colors.Transparent,

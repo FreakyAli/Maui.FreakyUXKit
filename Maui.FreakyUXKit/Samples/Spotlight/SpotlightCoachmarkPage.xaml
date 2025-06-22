@@ -292,7 +292,6 @@
                                 VerticalOptions="End">
                                 <Border
                                     Margin="20,0,20,20"
-                                    fuxk:FreakyCoachmark.ArrowStyle="Sketched"
                                     fuxk:FreakyCoachmark.CoachmarkAnimation="Spotlight"
                                     fuxk:FreakyCoachmark.DisplayOrder="2"
                                     fuxk:FreakyCoachmark.OverlayMargin="100"
