@@ -388,7 +388,7 @@ public partial class FreakyIntroView
 		var canvasSize = canvasView.CanvasSize;
 		rippleColor = color.ToSKColor();
 		rippleRadius = 0;
-		rippleMaxRadius = (float)Math.Sqrt(canvasSize.Width * canvasSize.Width + canvasSize.Height * canvasSize.Height);
+		rippleMaxRadius = (float)Math.Sqrt((canvasSize.Width * canvasSize.Width) + (canvasSize.Height * canvasSize.Height));
 		isAnimatingRipple = true;
 
 		Dispatcher.StartTimer(TimeSpan.FromMilliseconds(16), () =>
@@ -416,7 +416,7 @@ public partial class FreakyIntroView
 		animationColor = color.ToSKColor();
 		animationProgress = 0f;
 		animationRadius = 0f;
-		maxRadius = (float)Math.Sqrt(canvasSize.Width * canvasSize.Width + canvasSize.Height * canvasSize.Height);
+		maxRadius = (float)Math.Sqrt((canvasSize.Width * canvasSize.Width) + (canvasSize.Height * canvasSize.Height));
 		isAnimating = true;
 		animationStartTime = DateTime.Now;
 
@@ -458,8 +458,8 @@ public partial class FreakyIntroView
 				Position = new SKPoint(canvasSize.Width / 2, canvasSize.Height),
 				Velocity = new SKPoint(
 					(float)(random.NextDouble() - 0.5) * 200,
-					(float)(random.NextDouble() * -300 - 100)),
-				Size = (float)(random.NextDouble() * 8 + 2),
+					(float)((random.NextDouble() * -300) - 100)),
+				Size = (float)((random.NextDouble() * 8) + 2),
 				Color = animationColor,
 				Life = 1f
 			});
@@ -490,8 +490,8 @@ public partial class FreakyIntroView
 		{
 			var particle = particles[i];
 			particle.Position = new SKPoint(
-				particle.Position.X + particle.Velocity.X * 0.016f,
-				particle.Position.Y + particle.Velocity.Y * 0.016f);
+				particle.Position.X + (particle.Velocity.X * 0.016f),
+				particle.Position.Y + (particle.Velocity.Y * 0.016f));
 			particle.Life -= 0.02f * (float)AnimationSpeed;
 
 			if (particle.Life <= 0)
@@ -646,7 +646,7 @@ public partial class FreakyIntroView
 
 		for (int x = 0; x <= info.Width; x += 5)
 		{
-			var y = info.Height - waveHeight + amplitude * (float)Math.Sin(frequency * x + wavePhase);
+			var y = info.Height - waveHeight + (amplitude * (float)Math.Sin((frequency * x) + wavePhase));
 			path.LineTo(x, y);
 		}
 
@@ -661,7 +661,7 @@ public partial class FreakyIntroView
 	{
 		const float c1 = 1.70158f;
 		const float c3 = c1 + 1f;
-		return 1f + c3 * (float)Math.Pow(t - 1f, 3) + c1 * (float)Math.Pow(t - 1f, 2);
+		return 1f + (c3 * (float)Math.Pow(t - 1f, 3)) + (c1 * (float)Math.Pow(t - 1f, 2));
 	}
 	private static float EaseOutBounce(float t)
 	{
@@ -669,9 +669,9 @@ public partial class FreakyIntroView
 		const float d1 = 2.75f;
 
 		if (t < 1f / d1) return n1 * t * t;
-		if (t < 2f / d1) return n1 * (t -= 1.5f / d1) * t + 0.75f;
-		if (t < 2.5f / d1) return n1 * (t -= 2.25f / d1) * t + 0.9375f;
-		return n1 * (t -= 2.625f / d1) * t + 0.984375f;
+		if (t < 2f / d1) return (n1 * (t -= 1.5f / d1) * t) + 0.75f;
+		if (t < 2.5f / d1) return (n1 * (t -= 2.25f / d1) * t) + 0.9375f;
+		return (n1 * (t -= 2.625f / d1) * t) + 0.984375f;
 	}
 }
 
