@@ -19,7 +19,7 @@ internal static class SkiaSharpExtensions
         using var paint = new SKPaint
         {
             Style = SKPaintStyle.Stroke,
-            Color = color.WithAlpha((byte)(255 * (1 - radius / 300f))),
+            Color = color.WithAlpha((byte)(255 * (1 - (radius / 300f)))),
             StrokeWidth = 4,
             IsAntialias = true
         };
@@ -36,7 +36,7 @@ internal static class SkiaSharpExtensions
             BlendMode = SKBlendMode.Clear,
             IsAntialias = true
         };
-        canvas.DrawRoundRect(new SKRect(cx - width / 2, cy - height / 2, cx + width / 2, cy + height / 2), 20, 20, eraserPaint);
+        canvas.DrawRoundRect(new SKRect(cx - (width / 2), cy - (height / 2), cx + (width / 2), cy + (height / 2)), 20, 20, eraserPaint);
     }
 
     public static void DrawArrow(this SKCanvas canvas, SKPoint start, SKPoint end, SKColor color, ArrowStyle style, float strokeWidth)
@@ -72,7 +72,7 @@ internal static class SkiaSharpExtensions
 
         for (int i = 0; i < strokePasses; i++)
         {
-            float variation = (float)(rand.NextDouble() * 0.6 - 0.3); // +/-30%
+            float variation = (float)((rand.NextDouble() * 0.6) - 0.3); // +/-30%
             float strokeWidth = baseStrokeWidth * (1f + variation);
 
             // Slight positional offset for realism
@@ -99,7 +99,7 @@ internal static class SkiaSharpExtensions
     {
         var dx = end.X - start.X;
         var dy = end.Y - start.Y;
-        var length = (float)Math.Sqrt(dx * dx + dy * dy);
+        var length = (float)Math.Sqrt((dx * dx) + (dy * dy));
         var direction = new SKPoint(dx / length, dy / length);
 
         int segments = 6;
@@ -109,8 +109,8 @@ internal static class SkiaSharpExtensions
         for (int i = 1; i < segments; i++)
         {
             float t = i / (float)segments;
-            var baseX = start.X + dx * t + offsetX;
-            var baseY = start.Y + dy * t + offsetY;
+            var baseX = start.X + (dx * t) + offsetX;
+            var baseY = start.Y + (dy * t) + offsetY;
 
             float wave = (float)(Math.Sin(t * Math.PI * 2) * 1.5f); // subtle wave
             float perpX = -direction.Y * wave;
@@ -143,8 +143,8 @@ internal static class SkiaSharpExtensions
 
         for (int i = 0; i < 2; i++)
         {
-            float lengthVariation = (float)(rand.NextDouble() * 4f - 2f);
-            float strokeWidth = baseStrokeWidth * (1f + (float)(rand.NextDouble() * 0.3 - 0.15f));
+            float lengthVariation = (float)((rand.NextDouble() * 4f) - 2f);
+            float strokeWidth = baseStrokeWidth * (1f + (float)((rand.NextDouble() * 0.3) - 0.15f));
 
             using var paint = new SKPaint
             {
@@ -159,8 +159,8 @@ internal static class SkiaSharpExtensions
             float len = headLength + lengthVariation;
 
             var point = new SKPoint(
-                end.X - len * (float)Math.Cos(angle + angleOffset),
-                end.Y - len * (float)Math.Sin(angle + angleOffset)
+                end.X - (len * (float)Math.Cos(angle + angleOffset)),
+                end.Y - (len * (float)Math.Sin(angle + angleOffset))
             );
 
             canvas.DrawLine(end, point, paint);
@@ -181,7 +181,7 @@ internal static class SkiaSharpExtensions
         // Vector and direction
         var dx = end.X - start.X;
         var dy = end.Y - start.Y;
-        var length = (float)Math.Sqrt(dx * dx + dy * dy);
+        var length = (float)Math.Sqrt((dx * dx) + (dy * dy));
         if (length == 0) return;
 
         var unit = new SKPoint(dx / length, dy / length);
@@ -194,8 +194,8 @@ internal static class SkiaSharpExtensions
         for (int i = 1; i < segments; i++)
         {
             float t = i / (float)segments;
-            var baseX = start.X + dx * t;
-            var baseY = start.Y + dy * t;
+            var baseX = start.X + (dx * t);
+            var baseY = start.Y + (dy * t);
 
             // Smaller random offset for more subtle effect
             float offset = strokeWidth * 0.5f; // reduced wobble
@@ -229,13 +229,13 @@ internal static class SkiaSharpExtensions
         var angle = Math.Atan2(dy, dx);
 
         var arrowPoint1 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle))
         );
 
         var arrowPoint2 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle))
         );
 
         canvas.DrawLine(end, arrowPoint1, paint);
@@ -266,13 +266,13 @@ internal static class SkiaSharpExtensions
 
         // Calculate points for arrowhead
         var arrowPoint1 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle))
         );
 
         var arrowPoint2 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle))
         );
 
         // Draw the arrowhead
@@ -305,13 +305,13 @@ internal static class SkiaSharpExtensions
         float arrowHeadAngle = (float)(Math.PI / 7);
 
         var arrowPoint1 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle))
         );
 
         var arrowPoint2 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle))
         );
 
         using var path = new SKPath();
@@ -338,7 +338,7 @@ internal static class SkiaSharpExtensions
         // Direction vector
         var dx = end.X - start.X;
         var dy = end.Y - start.Y;
-        var length = (float)Math.Sqrt(dx * dx + dy * dy);
+        var length = (float)Math.Sqrt((dx * dx) + (dy * dy));
         if (length == 0) return;
 
         var unitDir = new SKPoint(dx / length, dy / length);
@@ -354,8 +354,8 @@ internal static class SkiaSharpExtensions
 
         // Base of arrowhead (end of shaft)
         var shaftEnd = new SKPoint(
-            end.X - unitDir.X * arrowHeadLength,
-            end.Y - unitDir.Y * arrowHeadLength
+            end.X - (unitDir.X * arrowHeadLength),
+            end.Y - (unitDir.Y * arrowHeadLength)
         );
 
         // Two parallel lines leading to shaftEnd
@@ -374,13 +374,13 @@ internal static class SkiaSharpExtensions
         // Arrowhead
         var angle = Math.Atan2(dy, dx);
         var arrowPoint1 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle))
         );
 
         var arrowPoint2 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle))
         );
 
         canvas.DrawLine(end, arrowPoint1, paint);
@@ -410,13 +410,13 @@ internal static class SkiaSharpExtensions
         float arrowHeadAngle = (float)(Math.PI / 6);
 
         var arrowPoint1 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle - arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle - arrowHeadAngle))
         );
 
         var arrowPoint2 = new SKPoint(
-            end.X - arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle),
-            end.Y - arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle)
+            end.X - (arrowHeadLength * (float)Math.Cos(angle + arrowHeadAngle)),
+            end.Y - (arrowHeadLength * (float)Math.Sin(angle + arrowHeadAngle))
         );
 
         canvas.DrawLine(end, arrowPoint1, paint);
@@ -457,7 +457,7 @@ internal static class SkiaSharpExtensions
         if (positions.ContainsKey(CoachmarkPosition.Top))
             return CoachmarkPosition.Top;
 
-        return positions.Any() ? positions.OrderByDescending(p => p.Value).First().Key : CoachmarkPosition.Bottom;
+        return positions.Count != 0 ? positions.OrderByDescending(p => p.Value).First().Key : CoachmarkPosition.Bottom;
     }
 
     /// <summary>
@@ -539,16 +539,16 @@ internal static class SkiaSharpExtensions
                 canvas.DrawCircle(centerX, centerY, radius, paint);
                 break;
             case HighlightShape.Ellipse:
-                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), paint);
+                canvas.DrawOval(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), paint);
                 break;
             case HighlightShape.Rectangle:
-                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), paint);
+                canvas.DrawRect(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), paint);
                 break;
             default: // RoundRectangle
-                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), cornerRadius), paint);
+                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), cornerRadius), paint);
                 break;
         }
     }
@@ -585,7 +585,7 @@ internal static class SkiaSharpExtensions
             // Convergence phase - show the ripple effect (only during first cycle)
             float convergenceProgress = progress / convergencePhaseEnd;
             float minRadius = Math.Max(targetWidth, targetHeight) / 2;
-            float currentRadius = maxDistance - (maxDistance - minRadius) * convergenceProgress;
+            float currentRadius = maxDistance - ((maxDistance - minRadius) * convergenceProgress);
 
             // Step 1: Draw the original dark overlay everywhere first
             using var originalPaint = new SKPaint
@@ -670,14 +670,14 @@ internal static class SkiaSharpExtensions
                     float ellipseHeight = radius * 2 * aspectRatio;
 
                     float convergeFactor = 1f - convergenceProgress;
-                    ellipseWidth = targetWidth + (ellipseWidth - targetWidth) * convergeFactor;
-                    ellipseHeight = targetHeight + (ellipseHeight - targetHeight) * convergeFactor;
+                    ellipseWidth = targetWidth + ((ellipseWidth - targetWidth) * convergeFactor);
+                    ellipseHeight = targetHeight + ((ellipseHeight - targetHeight) * convergeFactor);
 
                     clipPath.AddOval(new SKRect(
-                        centerX - ellipseWidth / 2,
-                        centerY - ellipseHeight / 2,
-                        centerX + ellipseWidth / 2,
-                        centerY + ellipseHeight / 2));
+                        centerX - (ellipseWidth / 2),
+                        centerY - (ellipseHeight / 2),
+                        centerX + (ellipseWidth / 2),
+                        centerY + (ellipseHeight / 2)));
                 }
                 break;
 
@@ -685,14 +685,14 @@ internal static class SkiaSharpExtensions
                 if (isConverging)
                 {
                     float convergeFactor = 1f - convergenceProgress;
-                    float rectWidth = targetWidth + (radius * 2 - targetWidth) * convergeFactor;
-                    float rectHeight = targetHeight + (radius * 2 - targetHeight) * convergeFactor;
+                    float rectWidth = targetWidth + (((radius * 2) - targetWidth) * convergeFactor);
+                    float rectHeight = targetHeight + (((radius * 2) - targetHeight) * convergeFactor);
 
                     clipPath.AddRect(new SKRect(
-                        centerX - rectWidth / 2,
-                        centerY - rectHeight / 2,
-                        centerX + rectWidth / 2,
-                        centerY + rectHeight / 2));
+                        centerX - (rectWidth / 2),
+                        centerY - (rectHeight / 2),
+                        centerX + (rectWidth / 2),
+                        centerY + (rectHeight / 2)));
                 }
                 break;
 
@@ -700,15 +700,15 @@ internal static class SkiaSharpExtensions
                 if (isConverging)
                 {
                     float convergeFactor = 1f - convergenceProgress;
-                    float roundRectWidth = targetWidth + (radius * 2 - targetWidth) * convergeFactor;
-                    float roundRectHeight = targetHeight + (radius * 2 - targetHeight) * convergeFactor;
-                    float currentCornerRadius = cornerRadius + (cornerRadius * 3 - cornerRadius) * convergeFactor;
+                    float roundRectWidth = targetWidth + (((radius * 2) - targetWidth) * convergeFactor);
+                    float roundRectHeight = targetHeight + (((radius * 2) - targetHeight) * convergeFactor);
+                    float currentCornerRadius = cornerRadius + (((cornerRadius * 3) - cornerRadius) * convergeFactor);
 
                     clipPath.AddRoundRect(new SKRect(
-                        centerX - roundRectWidth / 2,
-                        centerY - roundRectHeight / 2,
-                        centerX + roundRectWidth / 2,
-                        centerY + roundRectHeight / 2),
+                        centerX - (roundRectWidth / 2),
+                        centerY - (roundRectHeight / 2),
+                        centerX + (roundRectWidth / 2),
+                        centerY + (roundRectHeight / 2)),
                         currentCornerRadius, currentCornerRadius);
                 }
                 break;
@@ -739,14 +739,14 @@ internal static class SkiaSharpExtensions
                 {
                     float aspectRatio = targetHeight / targetWidth;
                     float convergeFactor = 1f - convergenceProgress;
-                    float ellipseWidth = targetWidth + (radius * 2 - targetWidth) * convergeFactor;
-                    float ellipseHeight = targetHeight + (radius * 2 * aspectRatio - targetHeight) * convergeFactor;
+                    float ellipseWidth = targetWidth + (((radius * 2) - targetWidth) * convergeFactor);
+                    float ellipseHeight = targetHeight + (((radius * 2 * aspectRatio) - targetHeight) * convergeFactor);
 
                     canvas.DrawOval(new SKRect(
-                        centerX - ellipseWidth / 2,
-                        centerY - ellipseHeight / 2,
-                        centerX + ellipseWidth / 2,
-                        centerY + ellipseHeight / 2), ringPaint);
+                        centerX - (ellipseWidth / 2),
+                        centerY - (ellipseHeight / 2),
+                        centerX + (ellipseWidth / 2),
+                        centerY + (ellipseHeight / 2)), ringPaint);
                 }
                 break;
 
@@ -754,14 +754,14 @@ internal static class SkiaSharpExtensions
                 if (isConverging)
                 {
                     float convergeFactor = 1f - convergenceProgress;
-                    float rectWidth = targetWidth + (radius * 2 - targetWidth) * convergeFactor;
-                    float rectHeight = targetHeight + (radius * 2 - targetHeight) * convergeFactor;
+                    float rectWidth = targetWidth + (((radius * 2) - targetWidth) * convergeFactor);
+                    float rectHeight = targetHeight + (((radius * 2) - targetHeight) * convergeFactor);
 
                     canvas.DrawRect(new SKRect(
-                        centerX - rectWidth / 2,
-                        centerY - rectHeight / 2,
-                        centerX + rectWidth / 2,
-                        centerY + rectHeight / 2), ringPaint);
+                        centerX - (rectWidth / 2),
+                        centerY - (rectHeight / 2),
+                        centerX + (rectWidth / 2),
+                        centerY + (rectHeight / 2)), ringPaint);
                 }
                 break;
 
@@ -769,15 +769,15 @@ internal static class SkiaSharpExtensions
                 if (isConverging)
                 {
                     float convergeFactor = 1f - convergenceProgress;
-                    float roundRectWidth = targetWidth + (radius * 2 - targetWidth) * convergeFactor;
-                    float roundRectHeight = targetHeight + (radius * 2 - targetHeight) * convergeFactor;
-                    float currentCornerRadius = cornerRadius + (cornerRadius * 3 - cornerRadius) * convergeFactor;
+                    float roundRectWidth = targetWidth + (((radius * 2) - targetWidth) * convergeFactor);
+                    float roundRectHeight = targetHeight + (((radius * 2) - targetHeight) * convergeFactor);
+                    float currentCornerRadius = cornerRadius + (((cornerRadius * 3) - cornerRadius) * convergeFactor);
 
                     canvas.DrawRoundRect(new SKRoundRect(new SKRect(
-                        centerX - roundRectWidth / 2,
-                        centerY - roundRectHeight / 2,
-                        centerX + roundRectWidth / 2,
-                        centerY + roundRectHeight / 2),
+                        centerX - (roundRectWidth / 2),
+                        centerY - (roundRectHeight / 2),
+                        centerX + (roundRectWidth / 2),
+                        centerY + (roundRectHeight / 2)),
                         currentCornerRadius), ringPaint);
                 }
                 break;
