@@ -9,4 +9,4 @@ public enum CoachmarkAnimationStyle
     Spotlight,
     Arrow,
     Morph
-}   
+}

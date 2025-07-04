@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Maui.FreakyUXKit.FreakyIntroView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Maui.FreakyUXKit"
+    xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+    x:Name="this">
+    <AbsoluteLayout>
+        <skia:SKCanvasView
+            x:Name="canvasView"
+            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+            AbsoluteLayout.LayoutFlags="All"
+            IgnorePixelScaling="true"
+            InputTransparent="True"
+            PaintSurface="OnPaintSurface" />
+        <CarouselView
+            Grid.Row="0"
+            AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="Transparent"
+            HorizontalScrollBarVisibility="Never"
+            IndicatorView="indicatorView"
+            IsScrollAnimated="{Binding IsScrollAnimated, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            IsSwipeEnabled="{Binding IsSwipeEnabled, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            ItemsSource="{Binding ItemsSource, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            ItemsUpdatingScrollMode="KeepLastItemInView"
+            Loop="False"
+            Position="{Binding Position, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            PositionChanged="CarouselView_PositionChanged"
+            VerticalScrollBarVisibility="Never">
+            <CarouselView.ItemsLayout>
+                <LinearItemsLayout
+                    Orientation="Horizontal"
+                    SnapPointsAlignment="Start"
+                    SnapPointsType="MandatorySingle" />
+            </CarouselView.ItemsLayout>
+            <CarouselView.ItemTemplate>
+                <DataTemplate x:DataType="local:FreakyIntroStep">
+                    <Grid Background="{Binding Background}" RowDefinitions="3*, 2*">
+                        <Image
+                            Grid.Row="0"
+                            Margin="10"
+                            Background="{Binding ImageBackground}"
+                            Source="{Binding ImageSource}"
+                            Style="{Binding ImageStyle}" />
+                        <Border
+                            Grid.Row="1"
+                            Padding="10"
+                            Background="{Binding BottomBackground}"
+                            StrokeShape="{Binding BottomStrokeShape}"
+                            StrokeThickness="0">
+                            <Grid RowDefinitions="*,Auto">
+                                <VerticalStackLayout Grid.Row="0" Spacing="10">
+                                    <Label
+                                        FontSize="Large"
+                                        FormattedText="{Binding TitleFormattedText}"
+                                        HorizontalTextAlignment="Center"
+                                        Style="{Binding TitleLabelStyle}"
+                                        Text="{Binding TitleText}" />
+                                    <Label
+                                        FontSize="Medium"
+                                        FormattedText="{Binding SubtitleFormattedText}"
+                                        HorizontalTextAlignment="Center"
+                                        Style="{Binding SubtitleLabelStyle}"
+                                        Text="{Binding SubTitleText}" />
+                                </VerticalStackLayout>
+                                <FlexLayout
+                                    Grid.Row="1"
+                                    AlignItems="Center"
+                                    Direction="{Binding ButtonsDirection, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+                                    HeightRequest="50"
+                                    JustifyContent="SpaceBetween"
+                                    Wrap="NoWrap">
+                                    <Button
+                                        Margin="5,0"
+                                        Command="{Binding LeftButtonCommand}"
+                                        FlexLayout.Grow="1"
+                                        IsVisible="{Binding IsLeftButtonVisible}"
+                                        Text="{Binding LeftButtonText}" />
+                                    <Button
+                                        Margin="5,0"
+                                        Command="{Binding CenterButtonCommand}"
+                                        FlexLayout.Grow="1"
+                                        IsVisible="{Binding IsCenterButtonVisible}"
+                                        Text="{Binding CenterButtonText}" />
+                                    <Button
+                                        Margin="5,0"
+                                        Command="{Binding RightButtonCommand}"
+                                        FlexLayout.Grow="1"
+                                        IsVisible="{Binding IsRightButtonVisible}"
+                                        Text="{Binding RightButtonText}" />
+                                </FlexLayout>
+                            </Grid>
+
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+        <IndicatorView
+            x:Name="indicatorView"
+            AbsoluteLayout.LayoutBounds="0.5,0.85,AutoSize,AutoSize"
+            AbsoluteLayout.LayoutFlags="PositionProportional"
+            HideSingle="True"
+            IndicatorColor="{Binding IndicatorColor, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            IndicatorSize="{Binding IndicatorSize, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            IndicatorsShape="{Binding IndicatorsShape, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            MaximumVisible="{Binding IndicatorMaximumVisible, Source={x:Reference this}, x:DataType=local:FreakyIntroView}"
+            SelectedIndicatorColor="{Binding SelectedIndicatorColor, Source={x:Reference this}, x:DataType=local:FreakyIntroView}" />
+    </AbsoluteLayout>
+</ContentView>

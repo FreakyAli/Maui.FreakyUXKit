@@ -18,7 +18,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <ControlTemplate x:Key="HeaderControlTemplate" x:DataType="local:FreakyBaseContentPage">
-                <AbsoluteLayout>
+                <AbsoluteLayout BindingContext="{Binding Source={RelativeSource TemplatedParent}}">
                     <Grid
                         AbsoluteLayout.LayoutBounds="0,0,1,1"
                         AbsoluteLayout.LayoutFlags="All"
