@@ -7,7 +7,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-
+		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 		<PackageId>FreakyUXKit</PackageId>
 		<LangVersion>latest</LangVersion>
 		<Authors>FreakyAli</Authors>
@@ -40,5 +40,11 @@
 	<ItemGroup>
 		<None Include="maui_toolkit.png" Pack="true" Visible="false" PackagePath="" />
 		<None Include="Readme.md" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="IntroView/FreakyIntroView.xaml.cs">
+	    <DependentUpon>FreakyIntroView.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 </Project>

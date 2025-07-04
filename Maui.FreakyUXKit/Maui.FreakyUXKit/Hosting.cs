@@ -8,7 +8,6 @@ public static class Hosting
     public static MauiAppBuilder UseFreakyUXKit(this MauiAppBuilder builder)
     {
         builder
-            .UseMauiCommunityToolkit()
             .UseSkiaSharp();
         return builder;
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Samples.Intro.IntroPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:fuxk="clr-namespace:Maui.FreakyUXKit;assembly=Maui.FreakyUXKit"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:Samples.Intro"
+    BackgroundColor="Black"
+    ios:Page.UseSafeArea="True"
+    x:DataType="local:IntroViewModel"
+    Shell.NavBarIsVisible="False">
+    <fuxk:FreakyIntroView AnimationType="Wave" ItemsSource="{Binding Steps}" />
+</ContentPage>
