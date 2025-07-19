@@ -23,7 +23,7 @@
             <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
         </CollectionView.ItemsLayout>
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="fuxk:CoachmarkAnimationStyle">
+            <DataTemplate x:DataType="x:String">
                 <Border Stroke="White">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding Path=BindingContext.ShowNextPageCommand, Source={x:Reference mainPage}, x:DataType=samples:MainPage}" CommandParameter="{Binding .}" />

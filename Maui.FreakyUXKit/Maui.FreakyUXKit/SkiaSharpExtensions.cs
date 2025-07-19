@@ -14,18 +14,6 @@ internal static class SkiaSharpExtensions
             (float)rect.Bottom);
     }
 
-    public static void DrawRipple(this SKCanvas canvas, float cx, float cy, float radius, SKColor color)
-    {
-        using var paint = new SKPaint
-        {
-            Style = SKPaintStyle.Stroke,
-            Color = color.WithAlpha((byte)(255 * (1 - radius / 300f))),
-            StrokeWidth = 4,
-            IsAntialias = true
-        };
-        canvas.DrawCircle(cx, cy, radius, paint);
-    }
-
     public static void DrawDarkOverlayWithSpotlight(this SKCanvas canvas, float cx, float cy, float width, float height)
     {
         using var overlayPaint = new SKPaint { Color = new SKColor(0, 0, 0, 180) };

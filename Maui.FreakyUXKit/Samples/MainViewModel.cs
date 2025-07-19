@@ -1,34 +1,25 @@
 using CommunityToolkit.Mvvm.Input;
-using Maui.FreakyUXKit;
 
 namespace Samples;
 
 public partial class MainViewModel : FreakyBaseViewModel
 {
-    public List<CoachmarkAnimationStyle> AnimationTypes { get; set; }
+    public List<string> AnimationTypes { get; set; }
 
     public MainViewModel()
     {
-        AnimationTypes = Enum.GetValues<CoachmarkAnimationStyle>().Cast<CoachmarkAnimationStyle>().ToList();
-        AnimationTypes.Remove(CoachmarkAnimationStyle.None);
+        AnimationTypes =
+        [
+            AppShell.focus,
+            AppShell.arrow,
+            AppShell.spotlight,
+            AppShell.pulse
+        ];
     }
 
     [RelayCommand]
-    private void ShowNextPage(CoachmarkAnimationStyle selection)
+    private async Task ShowNextPage(string selection)
     {
-        switch (selection)
-        {
-            case CoachmarkAnimationStyle.Focus:
-                Shell.Current.GoToAsync(AppShell.focus);
-                break;
-            case CoachmarkAnimationStyle.Arrow:
-                Shell.Current.GoToAsync(AppShell.arrow);
-                break;
-            case CoachmarkAnimationStyle.Spotlight:
-                Shell.Current.GoToAsync(AppShell.spotlight);
-                break;
-            default:
-                break;
-        }
+        await Shell.Current.GoToAsync(selection);
     }
 }

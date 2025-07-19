@@ -118,17 +118,14 @@ public partial class FreakyPopupPage : Popup
         switch (CoachmarkAnimation)
         {
             case CoachmarkAnimationStyle.Focus:
-            case CoachmarkAnimationStyle.Ripple:
             case CoachmarkAnimationStyle.Pulse:
             case CoachmarkAnimationStyle.Spotlight:
-            case CoachmarkAnimationStyle.Morph:
                 StartFocusAnimation(); // reuse timer system
                 break;
             case CoachmarkAnimationStyle.Arrow:
                 // Arrow is static, no animation timer needed
                 canvasView.InvalidateSurface();
                 break;
-            case CoachmarkAnimationStyle.None:
             default:
                 break;
         }
@@ -168,9 +165,6 @@ public partial class FreakyPopupPage : Popup
             case CoachmarkAnimationStyle.Focus:
                 RenderFocusAnimation(canvas, rect, highX, highY, highlightRect);
                 break;
-            case CoachmarkAnimationStyle.Ripple:
-                RenderRippleAnimation(canvas, rect, highX, highY, highlightRect);
-                break;
             case CoachmarkAnimationStyle.Pulse:
                 RenderPulseAnimation(canvas, rect, highX, highY, highlightRect);
                 break;
@@ -183,10 +177,6 @@ public partial class FreakyPopupPage : Popup
                 RenderStaticHighlight(canvas, rect, highX, highY, highlightRect);
                 RenderArrowPointer(canvas, highlightRect, skOverlayRect);
                 break;
-            case CoachmarkAnimationStyle.Morph:
-                RenderMorphingHighlight(canvas, rect, highX, highY, highlightRect);
-                break;
-            case CoachmarkAnimationStyle.None:
             default:
                 RenderStaticHighlight(canvas, rect, highX, highY, highlightRect);
                 break;
@@ -233,13 +223,6 @@ public partial class FreakyPopupPage : Popup
             float pulsedHeight = highlightRect.Height * _pulseScale;
             DrawFocusPulsingHighlight(canvas, rect, highX, highY, pulsedWidth, pulsedHeight);
         }
-    }
-
-    private void RenderRippleAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
-    {
-        float rippleRadius = bounds.Width * (_animationProgress * 1.5f);
-        canvas.DrawBasicBackgroundOverlay(rect);
-        canvas.DrawRipple(x, y, rippleRadius, FocusAnimationColor.ToSKColor());
     }
 
     private void RenderPulseAnimation(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
@@ -317,16 +300,6 @@ public partial class FreakyPopupPage : Popup
             overlayCenter.Y + direction.Y * (distToEdge * (1 - paddingPercent)));
 
         canvas.DrawArrow(start, end, ArrowColor.ToSKColor(), ArrowStyle, ArrowStrokeWidth);
-    }
-
-    private void RenderMorphingHighlight(SKCanvas canvas, SKRect rect, float x, float y, SKRect bounds)
-    {
-        float morphProgress = (float)Math.Sin(_animationProgress * Math.PI * 2) * 0.1f;
-        float width = bounds.Width * (1 + morphProgress);
-        float height = bounds.Height * (1 - morphProgress);
-        canvas.DrawBasicBackgroundOverlay(rect);
-        canvas.DrawHighlightCutOut(CurrentShape, x, y, width, height, CornerRadius);
-        canvas.DrawHighlightStroke(CurrentShape, x, y, width, height);
     }
 
     private void DrawFocusTransition(SKCanvas canvas, SKRect rect, float highX, float highY, float width, float height)
