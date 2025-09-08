@@ -354,6 +354,7 @@
                 <ContentView
                     fuxk:FreakyCoachmark.CoachmarkAnimation="Focus"
                     fuxk:FreakyCoachmark.DisplayOrder="1"
+                    IsVisible="False"
                     fuxk:FreakyCoachmark.FocusAnimationColor="{StaticResource Quinary}"
                     fuxk:FreakyCoachmark.OwningPage="{Reference page}"
                     fuxk:FreakyCoachmark.PreferredPosition="Right"

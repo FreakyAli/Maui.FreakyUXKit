@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
 using SkiaSharp;
@@ -37,6 +38,7 @@ public partial class FreakyPopupPage : Popup
     private Color ArrowColor => FreakyCoachmark.GetArrowColor(CurrentTargetView);
     private ArrowStyle ArrowStyle => FreakyCoachmark.GetArrowStyle(CurrentTargetView);
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
+    private bool AreCoachmarksEnabled => FreakyCoachmark.GetAreCoachmarksEnabled(CurrentTargetView);
     #endregion
 
     public FreakyPopupPage(List<View> coachMarkViews)
@@ -50,7 +52,7 @@ public partial class FreakyPopupPage : Popup
     private async void OnLoaded(object sender, EventArgs e)
     {
         await Task.Delay(100);
-        ShowCurrentCoachMark();
+        await ShowCurrentCoachMark();
     }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
@@ -68,13 +70,19 @@ public partial class FreakyPopupPage : Popup
     private async Task NextCoachMark()
     {
         _currentIndex++;
+        // advance while current is not visible
+        while (_currentIndex < _views.Count() && !IsEffectivelyVisible(_views.ElementAt(_currentIndex)))
+        {
+            _currentIndex++;
+        }
+
         if (_currentIndex >= _views.Count())
         {
             await Constants.MainPage?.ClosePopupAsync();
         }
         else
         {
-            ShowCurrentCoachMark();
+            await ShowCurrentCoachMark();
         }
     }
 
@@ -820,13 +828,19 @@ public partial class FreakyPopupPage : Popup
         OverlayView.VerticalOptions = LayoutOptions.Fill;
     }
 
-    private void ShowCurrentCoachMark()
+    private async Task ShowCurrentCoachMark()
     {
         ClearOverlayViews();
         ResetAnimationState();
 
         if (CurrentTargetView.Handler == null || OverlayView == null)
             return;
+
+        if (!IsEffectivelyVisible(CurrentTargetView) || OverlayView == null)
+        {
+            await NextCoachMark();
+            return;
+        }
 
         var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
 
@@ -874,5 +888,53 @@ public partial class FreakyPopupPage : Popup
 
         StartAnimation();
         canvasView.InvalidateSurface();
+    }
+
+    private bool IsEffectivelyVisible(View v)
+    {
+        if (v is null) return false;
+        if (v.Handler is null) return false; // not realized yet
+        if (!v.IsVisible) return false;      // collapsed
+        if (v.Opacity <= 0) return false;    // fully transparent
+
+        var r = v.GetRelativeBoundsTo(container);
+        if (r.Width <= 0 || r.Height <= 0) return false;
+
+        var cw = container.Width > 0 ? container.Width : Constants.Width;
+        var ch = container.Height > 0 ? container.Height : Constants.Height;
+        return (r.X < cw && r.Y < ch && r.X + r.Width > 0 && r.Y + r.Height > 0);
+    }
+
+
+    private void ResetOverlayView()
+    {
+        if (OverlayView == null) return;
+
+        // clear layout requests
+        OverlayView.WidthRequest = -1;
+        OverlayView.HeightRequest = -1;
+        OverlayView.MaximumWidthRequest = double.PositiveInfinity;
+        OverlayView.MaximumHeightRequest = double.PositiveInfinity;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // clear layout options and position hints
+        OverlayView.HorizontalOptions = LayoutOptions.Fill;
+        OverlayView.VerticalOptions = LayoutOptions.Fill;
+        OverlayView.Margin = new Thickness(0);
+        OverlayView.TranslationX = 0;
+        OverlayView.TranslationY = 0;
+
+        // ensure a fresh measure
+        OverlayView.InvalidateMeasure();
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName == nameof(AreCoachmarksEnabled))
+        {
+            ResetOverlayView();
+        }
     }
 }
