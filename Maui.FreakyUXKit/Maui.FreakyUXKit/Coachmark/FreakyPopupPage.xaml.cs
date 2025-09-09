@@ -8,7 +8,7 @@ namespace Maui.FreakyUXKit;
 
 public partial class FreakyPopupPage : Popup
 {
-    private readonly IEnumerable<View> _views;
+    private readonly IList<View> _views;
     private int _currentIndex;
     private SKRect _currentBounds;
     private readonly List<View> _overlays = new();
