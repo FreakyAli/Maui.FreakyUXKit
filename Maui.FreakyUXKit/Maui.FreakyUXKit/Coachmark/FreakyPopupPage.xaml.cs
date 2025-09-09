@@ -38,7 +38,6 @@ public partial class FreakyPopupPage : Popup
     private Color ArrowColor => FreakyCoachmark.GetArrowColor(CurrentTargetView);
     private ArrowStyle ArrowStyle => FreakyCoachmark.GetArrowStyle(CurrentTargetView);
     private float ArrowStrokeWidth => FreakyCoachmark.GetArrowStrokeWidth(CurrentTargetView);
-    private bool AreCoachmarksEnabled => FreakyCoachmark.GetAreCoachmarksEnabled(CurrentTargetView);
     #endregion
 
     public FreakyPopupPage(List<View> coachMarkViews)
@@ -71,7 +70,7 @@ public partial class FreakyPopupPage : Popup
     {
         _currentIndex++;
         // advance while current is not visible
-        while (_currentIndex < _views.Count() && !IsEffectivelyVisible(_views.ElementAt(_currentIndex)))
+        while (_currentIndex < _views.Count() && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
         {
             _currentIndex++;
         }
@@ -836,7 +835,7 @@ public partial class FreakyPopupPage : Popup
         if (CurrentTargetView.Handler == null || OverlayView == null)
             return;
 
-        if (!IsEffectivelyVisible(CurrentTargetView) || OverlayView == null)
+        if (!IsViewVisibleInContainer(CurrentTargetView) || OverlayView == null)
         {
             await NextCoachMark();
             return;
@@ -860,6 +859,7 @@ public partial class FreakyPopupPage : Popup
         );
 
         // Calculate overlay size with screen constraints
+        ResetOverlayView();
         var overlaySize = MeasureOverlayViewWithScreenConstraints();
 
         // Use original bounds for positioning calculations
@@ -890,7 +890,7 @@ public partial class FreakyPopupPage : Popup
         canvasView.InvalidateSurface();
     }
 
-    private bool IsEffectivelyVisible(View v)
+    private bool IsViewVisibleInContainer(View v)
     {
         if (v is null) return false;
         if (v.Handler is null) return false; // not realized yet
@@ -900,11 +900,10 @@ public partial class FreakyPopupPage : Popup
         var r = v.GetRelativeBoundsTo(container);
         if (r.Width <= 0 || r.Height <= 0) return false;
 
-        var cw = container.Width > 0 ? container.Width : Constants.Width;
-        var ch = container.Height > 0 ? container.Height : Constants.Height;
-        return (r.X < cw && r.Y < ch && r.X + r.Width > 0 && r.Y + r.Height > 0);
+        var calculatedWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var calculatedHeight = container.Height > 0 ? container.Height : Constants.Height;
+        return (r.X < calculatedWidth) && (r.Y < calculatedHeight) && (r.X + r.Width > 0) && (r.Y + r.Height > 0);
     }
-
 
     private void ResetOverlayView()
     {
@@ -927,14 +926,5 @@ public partial class FreakyPopupPage : Popup
 
         // ensure a fresh measure
         OverlayView.InvalidateMeasure();
-    }
-
-    protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        base.OnPropertyChanged(propertyName);
-        if (propertyName == nameof(AreCoachmarksEnabled))
-        {
-            ResetOverlayView();
-        }
     }
 }
