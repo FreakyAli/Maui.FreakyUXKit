@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
 using SkiaSharp;
@@ -7,7 +8,7 @@ namespace Maui.FreakyUXKit;
 
 public partial class FreakyPopupPage : Popup
 {
-    private readonly IEnumerable<View> _views;
+    private readonly IList<View> _views;
     private int _currentIndex;
     private SKRect _currentBounds;
     private readonly List<View> _overlays = new();
@@ -50,7 +51,7 @@ public partial class FreakyPopupPage : Popup
     private async void OnLoaded(object sender, EventArgs e)
     {
         await Task.Delay(100);
-        ShowCurrentCoachMark();
+        await ShowCurrentCoachMark();
     }
 
     private async void OnBackgroundTapped(object sender, EventArgs e)
@@ -68,13 +69,19 @@ public partial class FreakyPopupPage : Popup
     private async Task NextCoachMark()
     {
         _currentIndex++;
+        // advance while current is not visible
+        while (_currentIndex < _views.Count() && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
+        {
+            _currentIndex++;
+        }
+
         if (_currentIndex >= _views.Count())
         {
             await Constants.MainPage?.ClosePopupAsync();
         }
         else
         {
-            ShowCurrentCoachMark();
+            await ShowCurrentCoachMark();
         }
     }
 
@@ -820,13 +827,19 @@ public partial class FreakyPopupPage : Popup
         OverlayView.VerticalOptions = LayoutOptions.Fill;
     }
 
-    private void ShowCurrentCoachMark()
+    private async Task ShowCurrentCoachMark()
     {
         ClearOverlayViews();
         ResetAnimationState();
 
         if (CurrentTargetView.Handler == null || OverlayView == null)
             return;
+
+        if (!IsViewVisibleInContainer(CurrentTargetView) || OverlayView == null)
+        {
+            await NextCoachMark();
+            return;
+        }
 
         var bounds = CurrentTargetView.GetRelativeBoundsTo(container);
 
@@ -846,6 +859,7 @@ public partial class FreakyPopupPage : Popup
         );
 
         // Calculate overlay size with screen constraints
+        ResetOverlayView();
         var overlaySize = MeasureOverlayViewWithScreenConstraints();
 
         // Use original bounds for positioning calculations
@@ -874,5 +888,43 @@ public partial class FreakyPopupPage : Popup
 
         StartAnimation();
         canvasView.InvalidateSurface();
+    }
+
+    private bool IsViewVisibleInContainer(View v)
+    {
+        if (v is null) return false;
+        if (v.Handler is null) return false; // not realized yet
+        if (!v.IsVisible) return false;      // collapsed
+        if (v.Opacity <= 0) return false;    // fully transparent
+
+        var r = v.GetRelativeBoundsTo(container);
+        if (r.Width <= 0 || r.Height <= 0) return false;
+
+        var calculatedWidth = container.Width > 0 ? container.Width : Constants.Width;
+        var calculatedHeight = container.Height > 0 ? container.Height : Constants.Height;
+        return (r.X < calculatedWidth) && (r.Y < calculatedHeight) && (r.X + r.Width > 0) && (r.Y + r.Height > 0);
+    }
+
+    private void ResetOverlayView()
+    {
+        if (OverlayView == null) return;
+
+        // clear layout requests
+        OverlayView.WidthRequest = -1;
+        OverlayView.HeightRequest = -1;
+        OverlayView.MaximumWidthRequest = double.PositiveInfinity;
+        OverlayView.MaximumHeightRequest = double.PositiveInfinity;
+        OverlayView.MinimumWidthRequest = -1;
+        OverlayView.MinimumHeightRequest = -1;
+
+        // clear layout options and position hints
+        OverlayView.HorizontalOptions = LayoutOptions.Fill;
+        OverlayView.VerticalOptions = LayoutOptions.Fill;
+        OverlayView.Margin = new Thickness(0);
+        OverlayView.TranslationX = 0;
+        OverlayView.TranslationY = 0;
+
+        // ensure a fresh measure
+        OverlayView.InvalidateMeasure();
     }
 }
