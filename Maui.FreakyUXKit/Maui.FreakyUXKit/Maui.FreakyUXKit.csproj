@@ -35,7 +35,6 @@
 		<PackageReference Include="SkiaSharp.HarfBuzz" Version="3.119.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
 		<PackageReference Include="FreakyKit.Utils" Version="1.0.1" />	
-CommandsPlatform
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,3 +43,4 @@ CommandsPlatform
 	</ItemGroup>
 
 </Project>
+
