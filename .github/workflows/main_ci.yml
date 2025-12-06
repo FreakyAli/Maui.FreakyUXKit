@@ -19,5 +19,7 @@ jobs:
       uses: actions/setup-dotnet@v4 # Or the latest version available
       with:
         dotnet-version: '10.0.x'
+    - name: Restore
+      run: dotnet workload restore
     - name: Build
       run: dotnet build Maui.FreakyUXKit\Maui.FreakyUXKit.sln -c Release
