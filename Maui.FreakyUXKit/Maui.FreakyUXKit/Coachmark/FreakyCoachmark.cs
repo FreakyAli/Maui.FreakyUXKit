@@ -212,7 +212,6 @@ public static class FreakyCoachmark
 
     #endregion
 
-
     #region DisplayOrder
 
     public static readonly BindableProperty DisplayOrderProperty =
