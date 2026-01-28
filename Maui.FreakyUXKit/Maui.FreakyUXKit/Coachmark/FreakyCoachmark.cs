@@ -1,10 +1,13 @@
-using SkiaSharp;
+using System.Windows.Input;
 
 namespace Maui.FreakyUXKit;
 
 public static class FreakyCoachmark
 {
     private static Dictionary<Page, List<View>> _registeredCoachmarkViews = [];
+
+    internal static void ClearRegisteredCoachmarks() =>
+        _registeredCoachmarkViews.Clear();
 
     #region ArrowStrokeWidth
     public static readonly BindableProperty ArrowStrokeWidthProperty =
@@ -17,9 +20,11 @@ public static class FreakyCoachmark
         (float)view.GetValue(ArrowStrokeWidthProperty);
     public static void SetArrowStrokeWidth(BindableObject view, float value) =>
         view.SetValue(ArrowStrokeWidthProperty, value);
+
     #endregion
 
     #region ArrowStyle
+
     public static readonly BindableProperty ArrowStyleProperty =
         BindableProperty.CreateAttached(
             "ArrowStyle",
@@ -30,9 +35,11 @@ public static class FreakyCoachmark
         (ArrowStyle)view.GetValue(ArrowStyleProperty);
     public static void SetArrowStyle(BindableObject view, ArrowStyle value) =>
         view.SetValue(ArrowStyleProperty, value);
+
     #endregion
 
     #region ArrowColor
+
     public static readonly BindableProperty ArrowColorProperty =
         BindableProperty.CreateAttached(
             "ArrowColor",
@@ -43,9 +50,11 @@ public static class FreakyCoachmark
         (Color)view.GetValue(ArrowColorProperty);
     public static void SetArrowColor(BindableObject view, Color value) =>
         view.SetValue(ArrowColorProperty, value);
+
     #endregion
 
     #region FocusAnimationColor
+
     public static readonly BindableProperty FocusAnimationColorProperty =
         BindableProperty.CreateAttached(
             "FocusAnimationColor",
@@ -56,36 +65,41 @@ public static class FreakyCoachmark
         (Color)view.GetValue(FocusAnimationColorProperty);
     public static void SetFocusAnimationColor(BindableObject view, Color value) =>
         view.SetValue(FocusAnimationColorProperty, value);
+
     #endregion
 
     #region HighlightPadding
+
     public static readonly BindableProperty HighlightPaddingProperty =
         BindableProperty.CreateAttached(
             "HighlightPadding",
             typeof(float),
             typeof(FreakyCoachmark),
             0.0f);
-            
+
     public static float GetHighlightPadding(BindableObject view) =>
         (float)view.GetValue(HighlightPaddingProperty);
-        
+
     public static void SetHighlightPadding(BindableObject view, float value) =>
         view.SetValue(HighlightPaddingProperty, value);
+        
     #endregion
 
     #region PreferredPosition
+
     public static readonly BindableProperty PreferredPositionProperty =
         BindableProperty.CreateAttached(
             "PreferredPosition",
             typeof(CoachmarkPosition),
             typeof(FreakyCoachmark),
             CoachmarkPosition.Auto);
-            
+
     public static CoachmarkPosition GetPreferredPosition(BindableObject view) =>
         (CoachmarkPosition)view.GetValue(PreferredPositionProperty);
-        
+
     public static void SetPreferredPosition(BindableObject view, CoachmarkPosition value) =>
         view.SetValue(PreferredPositionProperty, value);
+
     #endregion
 
     #region OverlayMargin
@@ -95,12 +109,13 @@ public static class FreakyCoachmark
             typeof(float),
             typeof(FreakyCoachmark),
             10.0f);
-            
+
     public static float GetOverlayMargin(BindableObject view) =>
         (float)view.GetValue(OverlayMarginProperty);
-        
+
     public static void SetOverlayMargin(BindableObject view, float value) =>
         view.SetValue(OverlayMarginProperty, value);
+
     #endregion
 
     #region HighlightShapeCornerRadius
@@ -111,8 +126,8 @@ public static class FreakyCoachmark
             typeof(float),
             typeof(FreakyCoachmark),
             10.0f);
-    public static float GetHighlightShapeCornerRadius(BindableObject view) =>  
-        (float)view.GetValue(HighlightShapeCornerRadiusProperty);      
+    public static float GetHighlightShapeCornerRadius(BindableObject view) =>
+        (float)view.GetValue(HighlightShapeCornerRadiusProperty);
 
     public static void SetHighlightShapeCornerRadius(BindableObject view, float value) =>
         view.SetValue(HighlightShapeCornerRadiusProperty, value);
@@ -120,6 +135,7 @@ public static class FreakyCoachmark
     #endregion
 
     #region CoachmarkAnimation
+
     public static readonly BindableProperty CoachmarkAnimationProperty =
         BindableProperty.CreateAttached(
             "CoachmarkAnimation",
@@ -130,9 +146,11 @@ public static class FreakyCoachmark
         (CoachmarkAnimationStyle)view.GetValue(CoachmarkAnimationProperty);
     public static void SetCoachmarkAnimation(BindableObject view, CoachmarkAnimationStyle value) =>
         view.SetValue(CoachmarkAnimationProperty, value);
+
     #endregion
 
     #region HighlightShape
+
     public static readonly BindableProperty HighlightShapeProperty =
     BindableProperty.CreateAttached(
         "HighlightShape",
@@ -194,7 +212,6 @@ public static class FreakyCoachmark
 
     #endregion
 
-
     #region DisplayOrder
 
     public static readonly BindableProperty DisplayOrderProperty =
@@ -247,8 +264,34 @@ public static class FreakyCoachmark
 
     #endregion
 
-    internal static List<View> GetRegisteredCoachmarksForPage(Page page) =>
-        _registeredCoachmarkViews.TryGetValue(page, out var list) ? list : [];
+    #region SkipAllCommand
+
+    public static ICommand SkipAllCoachmarksCommand => 
+            new Command(async () =>
+            {
+                await FreakyPopupPage.SkipAllAsync();
+            });
+
+    #endregion
+
+    #region CompletedCommand
+
+    public static readonly BindableProperty CompletedCommandProperty =
+        BindableProperty.CreateAttached(
+            "CompletedCommand",
+            typeof(ICommand),
+            typeof(FreakyCoachmark),
+            null);
+
+    public static ICommand GetCompletedCommand(BindableObject view) =>
+        (ICommand)view.GetValue(CompletedCommandProperty);
+
+    public static void SetCompletedCommand(BindableObject view, ICommand value) =>
+        view.SetValue(CompletedCommandProperty, value);
+    #endregion
+
+    // internal static List<View> GetRegisteredCoachmarksForPage(Page page) =>
+    //     _registeredCoachmarkViews.TryGetValue(page, out var list) ? list : [];
 
     private static async void OnPageLoaded(object? sender, EventArgs e)
     {

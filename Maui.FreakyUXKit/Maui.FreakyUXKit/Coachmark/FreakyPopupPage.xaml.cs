@@ -1,6 +1,7 @@
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
+using FreakyKit.Utils;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
@@ -11,10 +12,10 @@ public partial class FreakyPopupPage : Popup
     private readonly IList<View> _views;
     private int _currentIndex;
     private SKRect _currentBounds;
-    private readonly List<View> _overlays = new();
+    private readonly List<View> _overlays = [];
 
     // Animation system properties
-    private System.Timers.Timer _animationTimer;
+    private System.Timers.Timer? _animationTimer;
     private float _animationProgress = 0f;
     private float _pulseScale = 1f;
     private bool _pulseGrowing = true;
@@ -46,31 +47,42 @@ public partial class FreakyPopupPage : Popup
         _currentIndex = 0;
         _views = coachMarkViews;
         this.Loaded += OnLoaded;
+        this.Closed += OnClosed;
     }
 
-    private async void OnLoaded(object sender, EventArgs e)
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        this.Closed -= OnClosed;
+        this.Loaded -= OnLoaded;
+        ClearOverlayViews();
+        FreakyCoachmark.ClearRegisteredCoachmarks();
+    }
+
+    private async void OnLoaded(object? sender, EventArgs e)
     {
         await Task.Delay(100);
         await ShowCurrentCoachMark();
     }
 
-    private async void OnBackgroundTapped(object sender, EventArgs e)
+    private async void OnBackgroundTapped(object? sender, EventArgs e)
     {
         await NextCoachMark();
     }
 
-    public override Task CloseAsync(CancellationToken token = default)
+    internal static async Task SkipAllAsync()
     {
-        this.Loaded -= OnLoaded;
-        ClearOverlayViews();
-        return base.CloseAsync(token);
+        var mainPage = Constants.MainPage;
+        if (mainPage != null)
+        {
+            await mainPage.ClosePopupAsync();
+        }
     }
 
     private async Task NextCoachMark()
     {
         _currentIndex++;
         // advance while current is not visible
-        while (_currentIndex < _views.Count() && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
+        while (_currentIndex < _views.Count && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
         {
             _currentIndex++;
         }
@@ -78,6 +90,8 @@ public partial class FreakyPopupPage : Popup
         if (_currentIndex >= _views.Count())
         {
             await Constants.MainPage?.ClosePopupAsync();
+            var command = FreakyCoachmark.GetCompletedCommand(CurrentTargetView);
+            command?.ExecuteWhenAvailable();
         }
         else
         {
@@ -160,8 +174,8 @@ public partial class FreakyPopupPage : Popup
         var info = e.Info;
         var rect = info.Rect;
         var highlightRect = _currentBounds;
-        float highX = highlightRect.Left + highlightRect.Width / 2;
-        float highY = highlightRect.Top + highlightRect.Height / 2;
+        float highX = highlightRect.Left + (highlightRect.Width / 2);
+        float highY = highlightRect.Top + (highlightRect.Height / 2);
 
         if (CurrentTargetView == null || OverlayView == null)
             return;
@@ -188,7 +202,6 @@ public partial class FreakyPopupPage : Popup
                 RenderStaticHighlight(canvas, rect, highX, highY, highlightRect);
                 break;
         }
-
     }
 
     private void RenderStaticHighlight(SKCanvas canvas, SKRect rect, float highX, float highY, SKRect highlightRect)
@@ -273,7 +286,6 @@ public partial class FreakyPopupPage : Popup
         return new SKPoint(x, y);
     }
 
-
     private void RenderArrowPointer(SKCanvas canvas, SKRect highlightRect, SKRect overlayRect, float paddingPercent = 0.2f)
     {
         // Centers
@@ -283,7 +295,7 @@ public partial class FreakyPopupPage : Popup
         // Direction vector and distance from overlay center to highlight center
         var dx = highlightCenter.X - overlayCenter.X;
         var dy = highlightCenter.Y - overlayCenter.Y;
-        var totalDistance = MathF.Sqrt(dx * dx + dy * dy);
+        var totalDistance = MathF.Sqrt((dx * dx) + (dy * dy));
         if (totalDistance == 0)
             return;
 
@@ -293,18 +305,18 @@ public partial class FreakyPopupPage : Popup
         var edgePoint = GetClosestPointOnRect(highlightRect, overlayCenter);
 
         // Distance from overlayCenter to edgePoint
-        var distToEdge = MathF.Sqrt((edgePoint.X - overlayCenter.X) * (edgePoint.X - overlayCenter.X) +
-                                (edgePoint.Y - overlayCenter.Y) * (edgePoint.Y - overlayCenter.Y));
+        var distToEdge = MathF.Sqrt(((edgePoint.X - overlayCenter.X) * (edgePoint.X - overlayCenter.X)) +
+                                ((edgePoint.Y - overlayCenter.Y) * (edgePoint.Y - overlayCenter.Y)));
 
         // Calculate start point - padded 20% away from overlayCenter along direction
         var start = new SKPoint(
-            overlayCenter.X + direction.X * (totalDistance * paddingPercent),
-            overlayCenter.Y + direction.Y * (totalDistance * paddingPercent));
+            overlayCenter.X + (direction.X * (totalDistance * paddingPercent)),
+            overlayCenter.Y + (direction.Y * (totalDistance * paddingPercent)));
 
         // Calculate end point - 20% *before* edgePoint along the direction vector
         var end = new SKPoint(
-            overlayCenter.X + direction.X * (distToEdge * (1 - paddingPercent)),
-            overlayCenter.Y + direction.Y * (distToEdge * (1 - paddingPercent)));
+            overlayCenter.X + (direction.X * (distToEdge * (1 - paddingPercent))),
+            overlayCenter.Y + (direction.Y * (distToEdge * (1 - paddingPercent))));
 
         canvas.DrawArrow(start, end, ArrowColor.ToSKColor(), ArrowStyle, ArrowStrokeWidth);
     }
@@ -379,16 +391,16 @@ public partial class FreakyPopupPage : Popup
                 canvas.DrawCircle(centerX, centerY, radius, paint);
                 break;
             case HighlightShape.Ellipse:
-                canvas.DrawOval(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), paint);
+                canvas.DrawOval(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), paint);
                 break;
             case HighlightShape.Rectangle:
-                canvas.DrawRect(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), paint);
+                canvas.DrawRect(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), paint);
                 break;
             default: // RoundRectangle
-                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - width / 2, centerY - height / 2,
-                    centerX + width / 2, centerY + height / 2), CornerRadius), paint);
+                canvas.DrawRoundRect(new SKRoundRect(new SKRect(centerX - (width / 2), centerY - (height / 2),
+                    centerX + (width / 2), centerY + (height / 2)), CornerRadius), paint);
                 break;
         }
     }
