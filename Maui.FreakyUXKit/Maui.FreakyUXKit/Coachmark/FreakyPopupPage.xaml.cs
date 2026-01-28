@@ -1,6 +1,7 @@
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
+using FreakyKit.Utils;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 
@@ -11,10 +12,10 @@ public partial class FreakyPopupPage : Popup
     private readonly IList<View> _views;
     private int _currentIndex;
     private SKRect _currentBounds;
-    private readonly List<View> _overlays = new();
+    private readonly List<View> _overlays = [];
 
     // Animation system properties
-    private System.Timers.Timer _animationTimer;
+    private System.Timers.Timer? _animationTimer;
     private float _animationProgress = 0f;
     private float _pulseScale = 1f;
     private bool _pulseGrowing = true;
@@ -46,31 +47,42 @@ public partial class FreakyPopupPage : Popup
         _currentIndex = 0;
         _views = coachMarkViews;
         this.Loaded += OnLoaded;
+        this.Closed += OnClosed;
     }
 
-    private async void OnLoaded(object sender, EventArgs e)
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        this.Closed -= OnClosed;
+        this.Loaded -= OnLoaded;
+        ClearOverlayViews();
+        FreakyCoachmark.ClearRegisteredCoachmarks();
+    }
+
+    private async void OnLoaded(object? sender, EventArgs e)
     {
         await Task.Delay(100);
         await ShowCurrentCoachMark();
     }
 
-    private async void OnBackgroundTapped(object sender, EventArgs e)
+    private async void OnBackgroundTapped(object? sender, EventArgs e)
     {
         await NextCoachMark();
     }
 
-    public override Task CloseAsync(CancellationToken token = default)
+    internal static async Task SkipAllAsync()
     {
-        this.Loaded -= OnLoaded;
-        ClearOverlayViews();
-        return base.CloseAsync(token);
+        var mainPage = Constants.MainPage;
+        if (mainPage != null)
+        {
+            await mainPage.ClosePopupAsync();
+        }
     }
 
     private async Task NextCoachMark()
     {
         _currentIndex++;
         // advance while current is not visible
-        while (_currentIndex < _views.Count() && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
+        while (_currentIndex < _views.Count && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
         {
             _currentIndex++;
         }
@@ -78,6 +90,8 @@ public partial class FreakyPopupPage : Popup
         if (_currentIndex >= _views.Count())
         {
             await Constants.MainPage?.ClosePopupAsync();
+            var command = FreakyCoachmark.GetCompletedCommand(CurrentTargetView);
+            command?.ExecuteWhenAvailable();
         }
         else
         {
