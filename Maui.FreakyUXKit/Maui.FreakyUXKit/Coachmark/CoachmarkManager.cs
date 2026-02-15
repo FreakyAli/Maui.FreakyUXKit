@@ -15,6 +15,6 @@ internal class CoachmarkManager
             CanBeDismissedByTappingOutsideOfPopup = false,
             Shadow = null,
         };
-        await Constants.MainPage.ShowPopupAsync(tutorialPage, popupOptions);
+        await Constants.MainPage?.ShowPopupAsync(tutorialPage, popupOptions);
     }
 }

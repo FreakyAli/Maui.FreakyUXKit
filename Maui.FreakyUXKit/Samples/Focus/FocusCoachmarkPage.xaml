@@ -11,6 +11,7 @@
     fuxk:FreakyCoachmark.AreCoachmarksEnabled="True"
     x:DataType="vm:FocusCoachmarkViewModel"
     BackButtonCommand="{Binding BackButtonCommand}"
+    fuxk:FreakyCoachmark.CompletedCommand="{Binding CoachmarkCompletedCommand}"
     HeaderText="Profile">
     <ContentPage.Resources>
         <Style TargetType="Label">
