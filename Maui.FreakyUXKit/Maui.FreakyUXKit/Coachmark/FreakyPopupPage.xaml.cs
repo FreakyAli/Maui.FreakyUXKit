@@ -81,17 +81,22 @@ public partial class FreakyPopupPage : Popup
     private async Task NextCoachMark()
     {
         _currentIndex++;
-        // advance while current is not visible
         while (_currentIndex < _views.Count && !IsViewVisibleInContainer(_views.ElementAt(_currentIndex)))
         {
             _currentIndex++;
         }
 
-        if (_currentIndex >= _views.Count())
+        if (_currentIndex >= _views.Count)
         {
+            // Get the page from the last valid view before incrementing past the end
+            var lastView = _views.LastOrDefault();
+            var owningPage = lastView != null ? FreakyCoachmark.GetOwningPage(lastView) : null;
             await Constants.MainPage?.ClosePopupAsync();
-            var command = FreakyCoachmark.GetCompletedCommand(CurrentTargetView);
-            command?.ExecuteWhenAvailable();
+            if (owningPage != null)
+            {
+                var command = FreakyCoachmark.GetCompletedCommand(owningPage);
+                command?.ExecuteWhenAvailable();
+            }
         }
         else
         {
@@ -418,7 +423,7 @@ public partial class FreakyPopupPage : Popup
         _animationTimer.Start();
     }
 
-    private void UpdateFocusAnimation(object sender, System.Timers.ElapsedEventArgs e)
+    private void UpdateFocusAnimation(object? sender, System.Timers.ElapsedEventArgs e)
     {
         // Update animation progress
         if (_animationProgress <= FocusRipplePhaseEnd)
