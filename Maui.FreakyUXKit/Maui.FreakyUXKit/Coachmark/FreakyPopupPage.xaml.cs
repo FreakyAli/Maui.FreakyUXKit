@@ -86,7 +86,7 @@ public partial class FreakyPopupPage : Popup
             _currentIndex++;
         }
 
-        if (_currentIndex >= _views.Count())
+        if (_currentIndex >= _views.Count)
         {
             // Get the page from the last valid view before incrementing past the end
             var lastView = _views.LastOrDefault();

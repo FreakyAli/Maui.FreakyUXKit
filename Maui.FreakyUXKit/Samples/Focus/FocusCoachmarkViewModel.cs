@@ -9,7 +9,6 @@ public class FocusCoachmarkViewModel : FreakyBaseViewModel
     {
         CoachmarkCompletedCommand = new Command(() =>
         {
-            
         });
     }
 }
