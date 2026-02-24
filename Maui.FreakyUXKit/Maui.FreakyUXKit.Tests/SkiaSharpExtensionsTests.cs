@@ -1,5 +1,5 @@
-using Microsoft.Maui.Graphics;
 using SkiaSharp;
+using Xunit;
 
 namespace Maui.FreakyUXKit.Tests;
 

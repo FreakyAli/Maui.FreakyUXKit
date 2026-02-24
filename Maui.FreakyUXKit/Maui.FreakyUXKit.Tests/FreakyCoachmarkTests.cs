@@ -1,5 +1,4 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Graphics;
+using Xunit;
 
 namespace Maui.FreakyUXKit.Tests;
 

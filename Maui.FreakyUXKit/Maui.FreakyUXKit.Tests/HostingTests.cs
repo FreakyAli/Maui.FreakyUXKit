@@ -1,4 +1,4 @@
-using Microsoft.Maui.Hosting;
+using Xunit;
 
 namespace Maui.FreakyUXKit.Tests;
 
