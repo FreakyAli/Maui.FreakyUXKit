@@ -91,7 +91,10 @@ public partial class FreakyPopupPage : Popup
             // Get the page from the last valid view before incrementing past the end
             var lastView = _views.LastOrDefault();
             var owningPage = lastView != null ? FreakyCoachmark.GetOwningPage(lastView) : null;
-            await Constants.MainPage?.ClosePopupAsync();
+            if (Constants.MainPage != null)
+            {
+                await Constants.MainPage.ClosePopupAsync();
+            }
             if (owningPage != null)
             {
                 var command = FreakyCoachmark.GetCompletedCommand(owningPage);
